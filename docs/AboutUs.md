@@ -38,7 +38,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Data
 
-### Jean Doe
+### Ee Jon
 
 <img src="images/eejon.png" width="200px">
 
