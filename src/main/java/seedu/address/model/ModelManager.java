@@ -152,7 +152,7 @@ public class ModelManager implements Model {
             if (p.getName().toString().equals(nameToBeFind)) {
                 return p;
             }
-        }        
+        }
         return null;
     }
 

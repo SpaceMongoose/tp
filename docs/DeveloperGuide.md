@@ -282,7 +282,6 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Value proposition**: manage contacts faster than a typical mouse/GUI driven app
 
-
 ### User stories
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
