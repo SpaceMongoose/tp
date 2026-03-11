@@ -164,7 +164,7 @@ public class ModelManager implements Model {
     public List<Person> findPersonsByName(Name nameToBeFind) {
         List<Person> result = new ArrayList<>();
         for (Person p : this.addressBook.getPersonList()) {
-            if (p.getName().equalsIgnoreCase(nameToBeFind)){
+            if (p.getName().equalsIgnoreCase(nameToBeFind)) {
                 result.add(p);
             }
         }

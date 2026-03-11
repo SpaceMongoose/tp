@@ -32,7 +32,7 @@ public class DeleteCommand extends Command {
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
             + "[" + PREFIX_TAG + "TAG]...\n"
-            + "Example 1 (Unique name): " + COMMAND_WORD + " " + PREFIX_NAME +"John Doe\n"
+            + "Example 1 (Unique name): " + COMMAND_WORD + " " + PREFIX_NAME + "John Doe\n"
             + "Example 2 (Multiple matches): " + COMMAND_WORD + " "
             + PREFIX_NAME + "John Doe "
             + PREFIX_TAG + "CS2103";
