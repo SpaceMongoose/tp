@@ -13,7 +13,7 @@ import seedu.address.model.tag.Tag;
 
 /**
  * Represents a Person in the address book.
- * Guarantees: details are present and not null, field values are validated, immutable.
+ * Guarantees: name, phone and tags are present and not null, field values are validated, immutable.
  */
 public class Person {
 
@@ -27,7 +27,7 @@ public class Person {
     private final Set<Tag> tags = new HashSet<>();
 
     /**
-     * Every field must be present and not null.
+     * Name and phone are compulsory. Email and address are optional.
      */
     public Person(Name name, Phone phone, Optional<Email> email, Optional<Address> address, Set<Tag> tags) {
         requireAllNonNull(name, phone, email, address, tags);
@@ -110,8 +110,8 @@ public class Person {
         return new ToStringBuilder(this)
                 .add("name", name)
                 .add("phone", phone)
-                .add("email", email.map(Email::toString))
-                .add("address", address.map(Address::toString))
+                .add("email", email.map(Email::toString).orElse(""))
+                .add("address", address.map(Address::toString).orElse(""))
                 .add("tags", tags)
                 .toString();
     }

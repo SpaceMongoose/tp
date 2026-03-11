@@ -92,7 +92,7 @@ class JsonAdaptedPerson {
             modelEmail = Optional.empty();
         } else if (!Email.isValidEmail(email)) {
             throw new IllegalValueException(Email.MESSAGE_CONSTRAINTS);
-        } else { 
+        } else {
             modelEmail = Optional.of(new Email(email));
         }
 
