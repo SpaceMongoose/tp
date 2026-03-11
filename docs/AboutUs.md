@@ -19,7 +19,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 * Role: Backend Developer
 * Responsibilities: Feature development & Testing
-  
+
 ### Delwyn Ho
 
 <img src="images/nywled.png" width="200px">

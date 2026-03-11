@@ -285,7 +285,6 @@ _{Explain here how the data archiving feature will be implemented}_
 **Value proposition**: NAB enables students to quickly organize and find saved contacts across multiple modules 
 efficiently, while providing event management, tracking, and reminders.
 
-
 ### User stories
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
