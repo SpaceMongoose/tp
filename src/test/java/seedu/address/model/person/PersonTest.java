@@ -79,6 +79,12 @@ public class PersonTest {
         // different tags -> returns false
         editedAlice = new PersonBuilder(ALICE).withTags(VALID_TAG_HUSBAND).build();
         assertFalse(ALICE.equals(editedAlice));
+
+        // different events -> returns false
+        editedAlice = new PersonBuilder(ALICE)
+                .withEvents("Project meeting,21-02-26 1100,21-02-26 1200")
+                .build();
+        assertFalse(ALICE.equals(editedAlice));
     }
 
     @Test
@@ -86,7 +92,7 @@ public class PersonTest {
         String expected = Person.class.getCanonicalName() + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
                 + ", email=" + ALICE.getEmail().map(email -> email.toString()).orElse("")
                 + ", address=" + ALICE.getAddress().map(addr -> addr.toString()).orElse("")
-                + ", tags=" + ALICE.getTags() + "}";
+                + ", tags=" + ALICE.getTags() + ", events=" + ALICE.getEvents() + "}";
         assertEquals(expected, ALICE.toString());
     }
 }

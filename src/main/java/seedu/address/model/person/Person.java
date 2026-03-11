@@ -2,14 +2,18 @@ package seedu.address.model.person;
 
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.tag.Tag;
+
+
 
 /**
  * Represents a Person in the address book.
@@ -26,6 +30,9 @@ public class Person {
     private final Optional<Address> address;
     private final Set<Tag> tags = new HashSet<>();
 
+    // Event fields
+    private final List<Event> events;
+
     /**
      * Name and phone are compulsory. Email and address are optional.
      */
@@ -36,6 +43,7 @@ public class Person {
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
+        this.events = new ArrayList<>();
     }
 
     public Name getName() {
@@ -63,7 +71,25 @@ public class Person {
     }
 
     /**
-     * Returns true if both persons have the same phone number.
+     * Returns an immutable Event List
+     */
+    public List<Event> getEvents() {
+        return this.events;
+    }
+
+    /**
+     * Adds an event to the person's list of events.
+     * @param event
+     * @return true if the event was added successfully, false otherwise.
+     */
+    public boolean addEvent(Event event) {
+        events.add(event);
+        return true;
+    }
+
+
+    /**
+     * Returns true if both persons have the same name.
      * We define a contact/person to be uniquely identified by phone numbers.
      * This defines a weaker notion of equality between two persons.
      */
@@ -96,7 +122,8 @@ public class Person {
                 && phone.equals(otherPerson.phone)
                 && email.equals(otherPerson.email)
                 && address.equals(otherPerson.address)
-                && tags.equals(otherPerson.tags);
+                && tags.equals(otherPerson.tags)
+                && events.equals(otherPerson.events);
     }
 
     @Override
@@ -113,6 +140,7 @@ public class Person {
                 .add("email", email.map(Email::toString).orElse(""))
                 .add("address", address.map(Address::toString).orElse(""))
                 .add("tags", tags)
+                .add("events", events)
                 .toString();
     }
 
