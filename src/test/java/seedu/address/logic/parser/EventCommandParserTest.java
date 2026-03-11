@@ -28,8 +28,9 @@ public class EventCommandParserTest {
 
     @Test
     public void parse_addSubcommand_success() {
-        Event expectedEvent = new Event("Complete feature list", "21-02-26 1100", "21-02-26 1500", "Amy Bee");
-        AddEventCommand expectedCommand = new AddEventCommand(expectedEvent);
+        Event expectedEvent = new Event("Complete feature list", "21-02-26 1100",
+                "21-02-26 1500");
+        AddEventCommand expectedCommand = new AddEventCommand("Amy Bee", expectedEvent);
 
         String userInput = "add l/CS2103 Meeting d/Complete feature list s/21-02-26 1100 e/21-02-26 1500 "
                 + "to/Amy Bee";

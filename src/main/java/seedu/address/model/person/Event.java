@@ -8,32 +8,24 @@ public class Event {
     private final String description;
     private final String startTime;
     private final String endTime;
-    private final Name name;
 
     /**
      * Creating an Event
      * @param description Description of the event
      * @param startTime Start Date & time of the event
      * @param endTime End Date & time of the event
-     * @param name Name of the contact to be tagged
      */
-    public Event(String description, String startTime, String endTime, String name) {
+    public Event(String description, String startTime, String endTime) {
         requireNonNull(description);
         requireNonNull(startTime);
         requireNonNull(endTime);
-        requireNonNull(name);
         this.description = description;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.name = new Name(name);
     }
 
     public String getDescription() {
         return this.description;
-    }
-
-    public Name getName() {
-        return this.name;
     }
 
     public String getStartTime() {
@@ -46,7 +38,7 @@ public class Event {
 
     @Override
     public String toString() {
-        return String.format("%s: %s from %s to %s.", this.name, this.description, this.startTime, this.endTime);
+        return String.format("%s from %s to %s.", this.description, this.startTime, this.endTime);
     }
 
     @Override

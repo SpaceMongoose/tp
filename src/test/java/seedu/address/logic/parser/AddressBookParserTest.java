@@ -45,8 +45,8 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_eventAdd() throws Exception {
         Event expectedEvent = new Event("Complete feature list", "21-02-26 1100",
-            "21-02-26 1500", "Lee eejoong");
-        AddEventCommand expectedCommand = new AddEventCommand(expectedEvent);
+            "21-02-26 1500");
+        AddEventCommand expectedCommand = new AddEventCommand("Lee eejoong", expectedEvent);
 
         AddEventCommand command = (AddEventCommand) parser.parseCommand(
                 "event add l/CS2103 Meeting d/Complete feature list s/21-02-26 1100 "

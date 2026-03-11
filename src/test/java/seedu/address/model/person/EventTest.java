@@ -16,28 +16,25 @@ public class EventTest {
 
     @Test
     public void constructor_nullField_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> new Event(null, START, END, NAME));
-        assertThrows(NullPointerException.class, () -> new Event(DESCRIPTION, null, END, NAME));
-        assertThrows(NullPointerException.class, () -> new Event(DESCRIPTION, START, null, NAME));
-        assertThrows(NullPointerException.class, () -> new Event(DESCRIPTION, START, END, null));
+        assertThrows(NullPointerException.class, () -> new Event(null, START, END));
+        assertThrows(NullPointerException.class, () -> new Event(DESCRIPTION, null, END));
+        assertThrows(NullPointerException.class, () -> new Event(DESCRIPTION, START, null));
     }
 
     @Test
     public void getters() {
-        Event event = new Event(DESCRIPTION, START, END, NAME);
-
+        Event event = new Event(DESCRIPTION, START, END);
         assertEquals(DESCRIPTION, event.getDescription());
         assertEquals(START, event.getStartTime());
         assertEquals(END, event.getEndTime());
-        assertEquals(new Name(NAME), event.getName());
     }
 
     @Test
     public void equals() {
-        Event event = new Event(DESCRIPTION, START, END, NAME);
+        Event event = new Event(DESCRIPTION, START, END);
 
         // same values -> returns true
-        assertTrue(event.equals(new Event(DESCRIPTION, START, END, NAME)));
+        assertTrue(event.equals(new Event(DESCRIPTION, START, END)));
 
         // same object -> returns true
         assertTrue(event.equals(event));
@@ -49,19 +46,19 @@ public class EventTest {
         assertFalse(event.equals(5));
 
         // different description -> returns false
-        assertFalse(event.equals(new Event("Other", START, END, NAME)));
+        assertFalse(event.equals(new Event("Other", START, END)));
 
         // different start -> returns false
-        assertFalse(event.equals(new Event(DESCRIPTION, "21-02-26 1000", END, NAME)));
+        assertFalse(event.equals(new Event(DESCRIPTION, "21-02-26 1000", END)));
 
         // different end -> returns false
-        assertFalse(event.equals(new Event(DESCRIPTION, START, "21-02-26 1600", NAME)));
+        assertFalse(event.equals(new Event(DESCRIPTION, START, "21-02-26 1600")));
     }
 
     @Test
     public void toStringMethod() {
-        Event event = new Event(DESCRIPTION, START, END, NAME);
-        String expected = String.format("%s: %s from %s to %s.", NAME, DESCRIPTION, START, END, new Name(NAME));
+        Event event = new Event(DESCRIPTION, START, END);
+        String expected = String.format("%s from %s to %s.", DESCRIPTION, START, END);
         assertEquals(expected, event.toString());
     }
 }

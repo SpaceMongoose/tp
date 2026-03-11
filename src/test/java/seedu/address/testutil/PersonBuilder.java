@@ -52,7 +52,7 @@ public class PersonBuilder {
         email = personToCopy.getEmail();
         address = personToCopy.getAddress();
         tags = new HashSet<>(personToCopy.getTags());
-        events = personToCopy.getEvents();
+        events = new ArrayList<>(personToCopy.getEvents());
     }
 
     /**
@@ -101,13 +101,21 @@ public class PersonBuilder {
     public PersonBuilder withEvents(String... events) {
         for (String s : events) {
             String[] parts = s.split(",");
-            this.events.add(new Event(parts[0], parts[1], parts[2], this.name.fullName));
+            this.events.add(new Event(parts[0], parts[1], parts[2]));
         }
         return this;
     }
 
+    /**
+     * Return the person after parsing the JSON
+     * @return Person
+     */
     public Person build() {
-        return new Person(name, phone, email, address, tags);
+        Person person = new Person(name, phone, email, address, tags);
+        for (Event event : events) {
+            person.addEvent(event);
+        }
+        return person;
     }
 
 }

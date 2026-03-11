@@ -45,9 +45,9 @@ public class AddEventParser implements Parser<AddEventCommand> {
         String startDateTime = argMultimap.getValue(PREFIX_START).get().trim();
         String endDateTime = argMultimap.getValue(PREFIX_END).get().trim();
         String taggedContact = argMultimap.getValue(PREFIX_TO).get().trim();
-        Event event = new Event(description, startDateTime, endDateTime, taggedContact);
+        Event event = new Event(description, startDateTime, endDateTime);
 
-        return new AddEventCommand(event);
+        return new AddEventCommand(taggedContact, event);
     }
 
     /**

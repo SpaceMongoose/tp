@@ -7,6 +7,7 @@ import java.util.List;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Event;
+import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 
 /**
@@ -22,16 +23,18 @@ public class AddEventCommand extends Command {
             + "Example Command: event " + COMMAND_WORD + " CS2103 Meeting d/Complete feature list "
             + "s/21-02-26 1100 e/21-02-26 1500 to/yikleong";
 
-    public static final String MESSAGE_SUCCESS = "Added event for %1$s";
+    public static final String MESSAGE_SUCCESS = "Added event for %1$s: %2$s";
 
     private final Event toAdd;
+    private final Name contact;
 
     /**
      * Creates an AddEventCommand to add the specified {@code Event} to a person at {@code index}.
      */
-    public AddEventCommand(Event event) {
+    public AddEventCommand(String contact, Event event) {
         requireNonNull(event);
         this.toAdd = event;
+        this.contact = new Name(contact);
     }
 
     @Override
@@ -41,11 +44,12 @@ public class AddEventCommand extends Command {
         List<Person> contacts = model.getFilteredPersonList();
 
         // Assumptions: Unique names
-        Person personToEdit = model.findPersonByName(toAdd.getName());
+        Person personToEdit = model.findPersonByName(this.contact);
         Person editedPerson = createPersonWithEvent(personToEdit, toAdd);
 
         model.setPerson(personToEdit, editedPerson);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, toAdd));
+        return new CommandResult(String.format(MESSAGE_SUCCESS,
+                this.contact.fullName, toAdd.toString()));
     }
 
 

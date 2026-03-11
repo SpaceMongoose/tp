@@ -32,14 +32,14 @@ public class AddEventCommandTest {
 
     @Test
     public void constructor_nullEvent_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> new AddEventCommand(null));
+        assertThrows(NullPointerException.class, () -> new AddEventCommand(null, null));
     }
 
     @Test
     public void execute_eventAcceptedByModel_addSuccessful() throws Exception {
-        Event existingEvent = new Event("Prepare slides", "20-02-26 1000", "20-02-26 1200", VALID_NAME);
-        Event eventToAdd = new Event(VALID_DESCRIPTION, VALID_START, VALID_END, VALID_NAME);
-        AddEventCommand addEventCommand = new AddEventCommand(eventToAdd);
+        Event existingEvent = new Event("Prepare slides", "20-02-26 1000", "20-02-26 1200");
+        Event eventToAdd = new Event(VALID_DESCRIPTION, VALID_START, VALID_END);
+        AddEventCommand addEventCommand = new AddEventCommand(VALID_NAME, eventToAdd);
 
         Person personToEdit = new PersonBuilder().withName(VALID_NAME).build();
         personToEdit.addEvent(existingEvent);
@@ -51,7 +51,7 @@ public class AddEventCommandTest {
         expectedEditedPerson.addEvent(existingEvent);
         expectedEditedPerson.addEvent(eventToAdd);
 
-        assertEquals(String.format(AddEventCommand.MESSAGE_SUCCESS, eventToAdd),
+        assertEquals(String.format(AddEventCommand.MESSAGE_SUCCESS, VALID_NAME, eventToAdd),
                 commandResult.getFeedbackToUser());
         assertEquals(personToEdit, modelStub.targetPerson);
         assertTrue(modelStub.editedPerson.getEvents().contains(existingEvent));
@@ -61,17 +61,17 @@ public class AddEventCommandTest {
 
     @Test
     public void equals() {
-        Event eventA = new Event("Meeting A", "21-02-26 1100", "21-02-26 1200", VALID_NAME);
-        Event eventB = new Event("Meeting B", "21-02-26 1300", "21-02-26 1400", VALID_NAME);
+        Event eventA = new Event("Meeting A", "21-02-26 1100", "21-02-26 1200");
+        Event eventB = new Event("Meeting B", "21-02-26 1300", "21-02-26 1400");
 
-        AddEventCommand addEventACommand = new AddEventCommand(eventA);
-        AddEventCommand addEventBCommand = new AddEventCommand(eventB);
+        AddEventCommand addEventACommand = new AddEventCommand(VALID_NAME, eventA);
+        AddEventCommand addEventBCommand = new AddEventCommand(VALID_NAME, eventB);
 
         // same object -> returns true
         assertTrue(addEventACommand.equals(addEventACommand));
 
         // same values -> returns true
-        AddEventCommand addEventACommandCopy = new AddEventCommand(eventA);
+        AddEventCommand addEventACommandCopy = new AddEventCommand(VALID_NAME, eventA);
         assertTrue(addEventACommand.equals(addEventACommandCopy));
 
         // different types -> returns false
@@ -86,8 +86,8 @@ public class AddEventCommandTest {
 
     @Test
     public void toStringMethod() {
-        Event event = new Event(VALID_DESCRIPTION, VALID_START, VALID_END, VALID_NAME);
-        AddEventCommand addEventCommand = new AddEventCommand(event);
+        Event event = new Event(VALID_DESCRIPTION, VALID_START, VALID_END);
+        AddEventCommand addEventCommand = new AddEventCommand(VALID_NAME, event);
         String expected = "Adding Event: " + event.toString();
         assertEquals(expected, addEventCommand.toString());
     }
