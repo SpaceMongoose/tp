@@ -9,10 +9,12 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.model.person.Event;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 
@@ -25,6 +27,8 @@ public class ModelManager implements Model {
     private final AddressBook addressBook;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
+    private final ObservableList<Event> allEvents;
+    private final FilteredList<Event> filteredEvents;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -37,6 +41,11 @@ public class ModelManager implements Model {
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
+
+        allEvents = FXCollections.observableArrayList();
+        filteredEvents = new FilteredList<>(allEvents);
+
+        refreshEventList();
     }
 
     public ModelManager() {
@@ -83,6 +92,7 @@ public class ModelManager implements Model {
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
         this.addressBook.resetData(addressBook);
+        refreshEventList();
     }
 
     @Override
@@ -99,12 +109,14 @@ public class ModelManager implements Model {
     @Override
     public void deletePerson(Person target) {
         addressBook.removePerson(target);
+        refreshEventList();
     }
 
     @Override
     public void addPerson(Person person) {
         addressBook.addPerson(person);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        refreshEventList();
     }
 
     @Override
@@ -112,6 +124,7 @@ public class ModelManager implements Model {
         requireAllNonNull(target, editedPerson);
 
         addressBook.setPerson(target, editedPerson);
+        refreshEventList();
     }
 
     //=========== Filtered Person List Accessors =============================================================
@@ -145,7 +158,8 @@ public class ModelManager implements Model {
         ModelManager otherModelManager = (ModelManager) other;
         return addressBook.equals(otherModelManager.addressBook)
                 && userPrefs.equals(otherModelManager.userPrefs)
-                && filteredPersons.equals(otherModelManager.filteredPersons);
+                && filteredPersons.equals(otherModelManager.filteredPersons)
+                && filteredEvents.equals(otherModelManager.filteredEvents);
     }
 
     // Assumption: valid inputs
@@ -157,6 +171,33 @@ public class ModelManager implements Model {
             }
         }
         return null;
+    }
+
+    //=========== Filtered Event List Accessors =============================================================
+
+    /**
+     * Returns an unmodifiable view of the list of {@code Event} from all persons.
+     */
+    @Override
+    public ObservableList<Event> getFilteredEventList() {
+        return filteredEvents;
+    }
+
+    @Override
+    public void updateFilteredEventList(Predicate<Event> predicate) {
+        requireNonNull(predicate);
+        filteredEvents.setPredicate(predicate);
+    }
+
+    /**
+     * Rebuilds the master event list from all events attached to persons in the address book.
+     */
+    private void refreshEventList() {
+        List<Event> rebuiltEvents = new ArrayList<>();
+        for (Person person : addressBook.getPersonList()) {
+            rebuiltEvents.addAll(person.getEvents());
+        }
+        allEvents.setAll(rebuiltEvents);
     }
 
     // Assumption: valid inputs
@@ -172,3 +213,4 @@ public class ModelManager implements Model {
     }
 
 }
+
