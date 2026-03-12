@@ -27,7 +27,7 @@ public class EventCommandParser implements Parser<Command> {
         case AddEventCommand.COMMAND_WORD:
             return new AddEventParser().parse(args);
         case FindEventCommand.COMMAND_WORD:
-            return new FindEventParser().parse(parts.length > 1 ? parts[1] : "");
+            return new FindEventParser().parse(parts.length > 1 ? " " + parts[1] : "");
         default:
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE));
         }

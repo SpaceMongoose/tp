@@ -23,8 +23,8 @@ public class FindEventCommand extends Command {
     public static final String MESSAGE_USAGE = "event " + COMMAND_WORD
             + ": Finds all events from persons whose names contain any of "
             + "the specified keywords (case-insensitive) and displays them as a list.\n"
-            + "Parameters: KEYWORD [MORE_KEYWORDS]...\n"
-            + "Example: " + COMMAND_WORD + " yikleong john";
+            + "Parameters: n/KEYWORD [MORE_KEYWORDS]...\n"
+            + "Example: event " + COMMAND_WORD + " n/yikleong john";
 
     private final NameContainsKeywordsPredicate predicate;
 

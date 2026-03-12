@@ -1,6 +1,7 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 
 import java.util.Arrays;
 
@@ -22,13 +23,15 @@ public class FindEventParser implements Parser<FindEventCommand> {
      * @throws ParseException if the user input does not conform to the expected format
      */
     public FindEventCommand parse(String args) throws ParseException {
-        String trimmedArgs = args.trim();
-        if (trimmedArgs.isEmpty()) {
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_NAME);
+
+        if (!argMultimap.getPreamble().isEmpty() || argMultimap.getValue(PREFIX_NAME).isEmpty()) {
             throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindEventCommand.MESSAGE_USAGE));
         }
+        argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME);
 
-        String[] keywords = trimmedArgs.split("\\s+");
+        String[] keywords = argMultimap.getValue(PREFIX_NAME).get().trim().split("\\s+");
         return new FindEventCommand(new NameContainsKeywordsPredicate(Arrays.asList(keywords)));
     }
 }
