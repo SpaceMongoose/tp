@@ -199,7 +199,7 @@ public class ModelManager implements Model {
         }
         allEvents.setAll(rebuiltEvents);
     }
-  
+
     // Assumption: valid inputs
     @Override
     public List<Person> findPersonsByName(Name nameToBeFind) {
@@ -213,3 +213,4 @@ public class ModelManager implements Model {
     }
 
 }
+
