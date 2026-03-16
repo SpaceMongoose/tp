@@ -4,15 +4,20 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.model.person.Event;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.PersonInformation;
 
 /**
  * Represents the in-memory model of the address book data.
@@ -23,6 +28,8 @@ public class ModelManager implements Model {
     private final AddressBook addressBook;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
+    private final ObservableList<Event> allEvents;
+    private final FilteredList<Event> filteredEvents;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -35,6 +42,11 @@ public class ModelManager implements Model {
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
+
+        allEvents = FXCollections.observableArrayList();
+        filteredEvents = new FilteredList<>(allEvents);
+
+        refreshEventList();
     }
 
     public ModelManager() {
@@ -81,6 +93,7 @@ public class ModelManager implements Model {
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
         this.addressBook.resetData(addressBook);
+        refreshEventList();
     }
 
     @Override
@@ -97,12 +110,14 @@ public class ModelManager implements Model {
     @Override
     public void deletePerson(Person target) {
         addressBook.removePerson(target);
+        refreshEventList();
     }
 
     @Override
     public void addPerson(Person person) {
         addressBook.addPerson(person);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        refreshEventList();
     }
 
     @Override
@@ -110,6 +125,7 @@ public class ModelManager implements Model {
         requireAllNonNull(target, editedPerson);
 
         addressBook.setPerson(target, editedPerson);
+        refreshEventList();
     }
 
     //=========== Filtered Person List Accessors =============================================================
@@ -143,7 +159,8 @@ public class ModelManager implements Model {
         ModelManager otherModelManager = (ModelManager) other;
         return addressBook.equals(otherModelManager.addressBook)
                 && userPrefs.equals(otherModelManager.userPrefs)
-                && filteredPersons.equals(otherModelManager.filteredPersons);
+                && filteredPersons.equals(otherModelManager.filteredPersons)
+                && filteredEvents.equals(otherModelManager.filteredEvents);
     }
 
     // Assumption: valid inputs
@@ -157,4 +174,82 @@ public class ModelManager implements Model {
         return null;
     }
 
+    //=========== Filtered Event List Accessors =============================================================
+
+    /**
+     * Returns an unmodifiable view of the list of {@code Event} from all persons.
+     */
+    @Override
+    public ObservableList<Event> getFilteredEventList() {
+        return filteredEvents;
+    }
+
+    @Override
+    public void updateFilteredEventList(Predicate<Event> predicate) {
+        requireNonNull(predicate);
+        filteredEvents.setPredicate(predicate);
+    }
+
+    /**
+     * Rebuilds the master event list from all events attached to persons in the address book.
+     */
+    private void refreshEventList() {
+        List<Event> rebuiltEvents = new ArrayList<>();
+        for (Person person : addressBook.getPersonList()) {
+            rebuiltEvents.addAll(person.getEvents());
+        }
+        allEvents.setAll(rebuiltEvents);
+    }
+
+    // Assumption: valid inputs
+    @Override
+    public List<Person> findPersonsByName(Name nameToBeFind) {
+        List<Person> result = new ArrayList<>();
+        for (Person p : this.addressBook.getPersonList()) {
+            if (p.getName().equalsIgnoreCase(nameToBeFind)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns a list of persons matching the provided {@link PersonInformation}.
+     * Name is required and must match (case-insensitive). Optional fields are applied as additional
+     * filters when present. Tags match if any provided tag is present on the person.
+     *
+     * @param info search criteria with required name and optional fields
+     * @return list of persons matching the criteria
+     */
+    public List<Person> findPersons(PersonInformation info) {
+        return addressBook
+                .getPersonList()
+                .stream()
+                .filter(person -> matchesInformation(person, info))
+                .toList();
+    }
+
+    private static boolean matchesInformation(Person p, PersonInformation info) {
+        if (!p.getName().equalsIgnoreCase(info.name)) {
+            return false;
+        }
+        // checking phone number:
+        if (!info.phone.map(ph -> ph.equals(p.getPhone())).orElse(true)) {
+            return false;
+        }
+        if (!info.email.map(em -> p.getEmail().map(e -> em.equals(e)).orElse(false))
+                .orElse(true)) {
+            return false;
+        }
+        if (!info.address.map(ad -> p.getAddress().map(a -> ad.equals(a)).orElse(false))
+                .orElse(true)) {
+            return false;
+        }
+        if (!info.tags.isEmpty() && !p.getTags().containsAll(info.tags)) {
+            return false;
+        }
+        return true;
+    }
+
 }
+
