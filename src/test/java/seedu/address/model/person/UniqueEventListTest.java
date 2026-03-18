@@ -142,6 +142,16 @@ public class UniqueEventListTest {
     }
 
     @Test
+    public void setEvents_listWithUniqueEvents_success() {
+        List<Event> uniqueList = Arrays.asList(MIDTERM, CONSULT);
+        uniqueEventList.setEvents(uniqueList);
+        UniqueEventList expectedUniqueEventList = new UniqueEventList();
+        expectedUniqueEventList.add(MIDTERM);
+        expectedUniqueEventList.add(CONSULT);
+        assertEquals(expectedUniqueEventList, uniqueEventList);
+    }
+
+    @Test
     public void asUnmodifiableObservableList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, ()
             -> uniqueEventList.asUnmodifiableObservableList().remove(0));

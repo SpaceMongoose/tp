@@ -68,6 +68,14 @@ public class AddEventParserTest {
     }
 
     @Test
+    public void parse_preamblePresent_failure() {
+        assertParseFailure(parser,
+                " unexpected l/CS2103 Meeting d/Complete feature list s/" + VALID_START
+                        + " e/" + VALID_END + " to/" + VALID_NAME,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
+    }
+
+    @Test
     public void parse_missingLabelPrefix_failure() {
         assertParseFailure(parser,
                 " d/Complete feature list s/" + VALID_START + " e/" + VALID_END + " to/" + VALID_NAME,

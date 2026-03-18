@@ -30,6 +30,18 @@ public class EventCommandParserTest {
     }
 
     @Test
+    public void parse_addSubcommandNoArgs_failure() {
+        assertParseFailure(parser, "add",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_viewSubcommandNoArgs_failure() {
+        assertParseFailure(parser, "view",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindEventCommand.MESSAGE_USAGE));
+    }
+
+    @Test
     public void parse_addSubcommand_success() {
         Event expectedEvent = new Event("Complete feature list", "21-02-26 1100",
                 "21-02-26 1500");

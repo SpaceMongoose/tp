@@ -56,6 +56,26 @@ public class EventTest {
     }
 
     @Test
+    public void isSameEvent() {
+        Event event = new Event(DESCRIPTION, START, END);
+
+        // same object -> returns true
+        assertTrue(event.isSameEvent(event));
+
+        // null -> returns false (covers line 49 null branch)
+        assertFalse(event.isSameEvent(null));
+
+        // same start and end, different description -> returns true
+        assertTrue(event.isSameEvent(new Event("Other description", START, END)));
+
+        // same start, different end -> returns false (covers line 51 false branch)
+        assertFalse(event.isSameEvent(new Event(DESCRIPTION, START, "21-02-26 1600")));
+
+        // different start, different end -> returns false
+        assertFalse(event.isSameEvent(new Event(DESCRIPTION, "21-02-26 1000", "21-02-26 1200")));
+    }
+
+    @Test
     public void toStringMethod() {
         Event event = new Event(DESCRIPTION, START, END);
         String expected = String.format("%s from %s to %s.", DESCRIPTION, START, END);
