@@ -147,4 +147,27 @@ public class ImportCommandTest {
         assertTrue(result.getFeedbackToUser().contains("1 row(s) skipped"));
     }
 
+    @Test
+    public void execute_fileDoesNotExist_throwsCommandException() {
+        ImportCommand importCommand = new ImportCommand("add", "nonExistentFile");
+        assertCommandFailure(importCommand, model,
+                String.format(ImportCommand.MESSAGE_ERROR_READING_FILE, "nonExistentFile.csv"));
+    }
+
+    @Test
+    public void execute_headerOnlyFile_returnsEmptyFileMessage() throws Exception {
+        Path filePath = testFolder.resolve("empty.csv");
+        Files.writeString(filePath, "Name,Phone,Email,Address,Tags,Events");
+
+        ImportCommand importCommand = new ImportCommand("add", "empty") {
+            @Override
+            protected Path getImportPath(Model model) {
+                return filePath;
+            }
+        };
+
+        String expectedMessage = String.format(ImportCommand.MESSAGE_EMPTY_FILE, "empty.csv");
+        CommandResult result = importCommand.execute(model);
+        assertEquals(expectedMessage, result.getFeedbackToUser());
+    }
 }
