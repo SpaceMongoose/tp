@@ -39,4 +39,18 @@ public class Photo {
     public static boolean isValidPhoto(String test) {
         return test.matches(VALIDATION_REGEX);
     }
+
+    /**
+     * Returns true if the photo is the default placeholder
+     */
+    public boolean isDefault() {
+        return this.value.equals(DEFAULT_PHOTO_PATH);
+    }
+
+    /**
+     * Returns true if the photo is already in the directory
+     */
+    public boolean isSavedLocally() {
+        return this.value.startsWith("data/images/");
+    }
 }

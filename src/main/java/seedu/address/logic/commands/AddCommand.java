@@ -8,11 +8,16 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHOTO;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
+import java.io.IOException;
+import java.util.Optional;
+
+import seedu.address.commons.util.PhotoStorageUtil;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.Photo;
 
 /**
  * Adds a person to the address book.
@@ -59,7 +64,25 @@ public class AddCommand extends Command {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         }
 
-        model.addPerson(toAdd);
+        // Scenario : Initiate copying the image ONLY if no duplicate person found
+        Person finalPersonToAdd = toAdd;
+        if (toAdd.getPhoto().isPresent()) {
+            try {
+                Photo photoObjectToRecord = PhotoStorageUtil.copyPhotoToDirectory(toAdd.getPhoto().get());
+                finalPersonToAdd = new Person(
+                        toAdd.getName(),
+                        toAdd.getPhone(),
+                        toAdd.getEmail(),
+                        toAdd.getAddress(),
+                        toAdd.getTags(),
+                        Optional.of(photoObjectToRecord)
+                );
+            } catch (IOException e) {
+                throw new CommandException("Error saving photo : " + e.getMessage());
+            }
+        }
+
+        model.addPerson(finalPersonToAdd);
         return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(toAdd)));
     }
 
