@@ -139,7 +139,7 @@ public class PhotoStorageUtilTest {
     }
 
     @Test
-    public void clearDirectory_deletionFail_throwIOException() throws IOException {
+    public void clearDirectory_deletionFail_throwIoException() throws IOException {
         Path dummyFile = testFolder.resolve("cannot_delete_me.jpg");
         Files.createFile(dummyFile);
 
