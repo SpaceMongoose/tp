@@ -144,18 +144,20 @@ public class PhotoStorageUtilTest {
         Path dummyFile = testFolder.resolve("cannot_delete_me.jpg");
         Files.createFile(dummyFile);
 
-        // Temporarily change permissions
-        testFolder.toFile().setReadable(false);
-        testFolder.toFile().setWritable(false);
-        testFolder.toFile().setExecutable(false);
-
         // Temporarily open a stream to file, so cannot delete
         try (FileOutputStream fs = new FileOutputStream(dummyFile.toFile())) {
-            assertThrows(IOException.class, () -> PhotoStorageUtil.clearDirectory());
-        } finally {
-            testFolder.toFile().setReadable(true);
-            testFolder.toFile().setWritable(true);
-            testFolder.toFile().setExecutable(true);
+            // Temporarily change permissions
+            testFolder.toFile().setReadable(false);
+            testFolder.toFile().setWritable(false);
+            testFolder.toFile().setExecutable(false);
+
+            try {
+                assertThrows(IOException.class, () -> PhotoStorageUtil.clearDirectory());
+            } finally {
+                testFolder.toFile().setReadable(true);
+                testFolder.toFile().setWritable(true);
+                testFolder.toFile().setExecutable(true);
+            }
         }
     }
 }
