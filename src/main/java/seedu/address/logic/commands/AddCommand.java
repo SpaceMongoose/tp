@@ -78,7 +78,7 @@ public class AddCommand extends Command {
                         Optional.of(photoObjectToRecord)
                 );
             } catch (IOException e) {
-                throw new CommandException("Error saving photo : " + e.getMessage());
+                throw new CommandException(Messages.MESSAGE_SAVE_PHOTO_FAIL + e.getMessage());
             }
         }
 
