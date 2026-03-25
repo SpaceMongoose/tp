@@ -113,4 +113,11 @@ public class EventTest {
         assertTrue(string.contains(DESC_A.toString()));
         assertTrue(string.contains(timeRange1().toString()));
     }
+
+    @Test
+    public void getStartAndEndTimeFormatted_returnsFormattedTimes() {
+        Event event = new Event(TITLE_MEETING, Optional.empty(), timeRange1());
+        assertEquals("2026-03-25 0900", event.getStartTimeFormatted());
+        assertEquals("2026-03-25 1000", event.getEndTimeFormatted());
+    }
 }

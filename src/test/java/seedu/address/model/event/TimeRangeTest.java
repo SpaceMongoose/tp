@@ -14,6 +14,8 @@ public class TimeRangeTest {
         TimeRange range = new TimeRange("2026-03-25 0900", "2026-03-25 1000");
         assertEquals("2026-03-25 0900", range.getStartTimeFormatted());
         assertEquals("2026-03-25 1000", range.getEndTimeFormatted());
+        assertEquals("2026-03-25T09:00", range.getStartTime().toString());
+        assertEquals("2026-03-25T10:00", range.getEndTime().toString());
     }
 
     @Test

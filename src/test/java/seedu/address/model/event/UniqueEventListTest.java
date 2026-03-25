@@ -91,6 +91,14 @@ public class UniqueEventListTest {
     }
 
     @Test
+    public void setEvents_listWithDuplicates_throwsDuplicateEventException() {
+        UniqueEventList list = new UniqueEventList();
+        Event e1 = newEvent("Meeting", "2026-03-25 0900", "2026-03-25 1000");
+        Event duplicate = newEvent("Meeting", "2026-03-25 0900", "2026-03-25 1000");
+        assertThrows(DuplicateEventException.class, () -> list.setEvents(Arrays.asList(e1, duplicate)));
+    }
+
+    @Test
     public void setEvents_uniqueEventList_success() {
         UniqueEventList source = new UniqueEventList();
         Event e1 = newEvent("Meeting", "2026-03-25 0900", "2026-03-25 1000");
@@ -121,5 +129,27 @@ public class UniqueEventListTest {
         UniqueEventList list = new UniqueEventList();
         list.add(newEvent("Meeting", "2026-03-25 0900", "2026-03-25 1000"));
         assertTrue(list.toString().contains("Meeting"));
+    }
+
+    @Test
+    public void iterator_iteratesAllEvents() {
+        UniqueEventList list = new UniqueEventList();
+        Event e1 = newEvent("Meeting", "2026-03-25 0900", "2026-03-25 1000");
+        Event e2 = newEvent("Review", "2026-03-26 0900", "2026-03-26 1000");
+        list.add(e1);
+        list.add(e2);
+
+        int count = 0;
+        for (Event ignored : list) {
+            count += 1;
+        }
+        assertEquals(2, count);
+    }
+
+    @Test
+    public void hashCode_invokesInternalListHashCode() {
+        UniqueEventList list = new UniqueEventList();
+        list.add(newEvent("Meeting", "2026-03-25 0900", "2026-03-25 1000"));
+        assertTrue(list.hashCode() != 0);
     }
 }
