@@ -50,7 +50,7 @@
   </HBox>
 
   <Rectangle fx:id="personCardSlidingAccent"
-             width="5" height="40" fill="#EF7C00"
+             width="5" height="150" fill="#EF7C00"
              visible="false" mouseTransparent="true"
              StackPane.alignment="CENTER_LEFT" />
 </StackPane>
