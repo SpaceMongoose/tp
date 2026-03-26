@@ -82,13 +82,20 @@ public class DeleteEventParser implements Parser<DeleteEventCommand> {
         return new PersonInformation(name, phone, email, address, tags);
     }
 
-    private static Event createEvent(ArgumentMultimap argMultimap) {
+    private static Event createEvent(ArgumentMultimap argMultimap) throws ParseException {
         Title title = new Title(argMultimap.getValue(PREFIX_TITLE).get().trim());
         Optional<Description> description = Optional.empty();
         String startTime = argMultimap.getValue(PREFIX_START).get().trim();
         String endTime = argMultimap.getValue(PREFIX_END).get().trim();
-        TimeRange timeRange = new TimeRange(startTime, endTime);
-        return new Event(title, description, timeRange);
+        if (!TimeRange.isValidDateTimeFormat(startTime) || !TimeRange.isValidDateTimeFormat(endTime)) {
+            throw new ParseException(TimeRange.MESSAGE_INVALID_DATETIME_FORMAT);
+        }
+        try {
+            TimeRange timeRange = new TimeRange(startTime, endTime);
+            return new Event(title, description, timeRange);
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(TimeRange.MESSAGE_END_NOT_AFTER_START, e);
+        }
     }
 
     /**

@@ -81,7 +81,7 @@ public class AddEventParser implements Parser<AddEventCommand> {
         return new PersonInformation(name, phone, email, address, tags);
     }
 
-    private static Event createEvent(ArgumentMultimap argMultimap) {
+    private static Event createEvent(ArgumentMultimap argMultimap) throws ParseException {
         Title title = new Title(argMultimap.getValue(PREFIX_TITLE).get().trim());
         Optional<Description> description = argMultimap.getValue(PREFIX_DESC)
                 .map(String::trim)
@@ -89,8 +89,15 @@ public class AddEventParser implements Parser<AddEventCommand> {
                 .map(Description::new);
         String startDateTime = argMultimap.getValue(PREFIX_START).get().trim();
         String endDateTime = argMultimap.getValue(PREFIX_END).get().trim();
-        TimeRange timeRange = new TimeRange(startDateTime, endDateTime);
-        return new Event(title, description, timeRange);
+        if (!TimeRange.isValidDateTimeFormat(startDateTime) || !TimeRange.isValidDateTimeFormat(endDateTime)) {
+            throw new ParseException(TimeRange.MESSAGE_INVALID_DATETIME_FORMAT);
+        }
+        try {
+            TimeRange timeRange = new TimeRange(startDateTime, endDateTime);
+            return new Event(title, description, timeRange);
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(TimeRange.MESSAGE_END_NOT_AFTER_START, e);
+        }
     }
 
     /**

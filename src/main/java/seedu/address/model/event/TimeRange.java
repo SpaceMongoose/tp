@@ -15,8 +15,12 @@ import java.util.Objects;
 public class TimeRange {
     public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HHmm";
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+    public static final String MESSAGE_INVALID_DATETIME_FORMAT =
+            "Invalid date/time format. Expected: " + DATE_TIME_PATTERN + " (e.g. 2026-03-25 0900).";
+    public static final String MESSAGE_END_NOT_AFTER_START =
+            "End time must be strictly after start time.";
     public static final String MESSAGE_CONSTRAINTS =
-            "Date/time must be in format " + DATE_TIME_PATTERN + ". End time must be after start time.";
+            MESSAGE_INVALID_DATETIME_FORMAT + " " + MESSAGE_END_NOT_AFTER_START;
 
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
@@ -32,6 +36,18 @@ public class TimeRange {
         checkArgument(isValidTimeRange(startTimeStr, endTimeStr), MESSAGE_CONSTRAINTS);
         this.startTime = LocalDateTime.parse(startTimeStr, DATE_TIME_FORMATTER);
         this.endTime = LocalDateTime.parse(endTimeStr, DATE_TIME_FORMATTER);
+    }
+
+    /**
+     * Returns true if {@code dateTimeStr} can be parsed according to {@code DATE_TIME_PATTERN}.
+     */
+    public static boolean isValidDateTimeFormat(String dateTimeStr) {
+        try {
+            LocalDateTime.parse(dateTimeStr, DATE_TIME_FORMATTER);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
     }
 
     private static boolean isValidTimeRange(String startTimeStr, String endTimeStr) {
@@ -58,6 +74,15 @@ public class TimeRange {
 
     public String getEndTimeFormatted() {
         return endTime.format(DATE_TIME_FORMATTER);
+    }
+
+    /**
+     * Returns true if both timeRanges of an event are overlapping 
+     * @param other the reference timeRange object of another event
+     * @return
+     */
+    public boolean isOverlapping(TimeRange other) {
+        return startTime.isBefore(other.endTime) && other.startTime.isBefore(endTime);
     }
 
     @Override
