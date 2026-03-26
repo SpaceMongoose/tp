@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import seedu.address.model.event.Description;
+import seedu.address.model.event.Event;
+import seedu.address.model.event.TimeRange;
+import seedu.address.model.event.Title;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
-import seedu.address.model.person.Event;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
@@ -123,7 +126,24 @@ public class PersonBuilder {
         this.events.clear();
         for (String s : events) {
             String[] parts = s.split(",");
-            this.events.add(new Event(parts[0], parts[1], parts[2]));
+            Title title = new Title(parts[0].trim());
+            Optional<Description> description = Optional.empty();
+            String start;
+            String end;
+
+            if (parts.length == 4) {
+                String descValue = parts[1].trim();
+                if (!descValue.isEmpty()) {
+                    description = Optional.of(new Description(descValue));
+                }
+                start = parts[2].trim();
+                end = parts[3].trim();
+            } else {
+                start = parts[1].trim();
+                end = parts[2].trim();
+            }
+
+            this.events.add(new Event(title, description, new TimeRange(start, end)));
         }
         return this;
     }

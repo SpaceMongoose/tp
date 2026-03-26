@@ -106,12 +106,19 @@ public class EventTest {
     }
 
     @Test
-    public void toString_containsFields() {
+    public void toString_withDescription_formatsCorrectly() {
         Event event = new Event(TITLE_MEETING, Optional.of(DESC_A), timeRange1());
-        String string = event.toString();
-        assertTrue(string.contains(TITLE_MEETING.toString()));
-        assertTrue(string.contains(DESC_A.toString()));
-        assertTrue(string.contains(timeRange1().toString()));
+        String expected = String.format("Title: %s, Description: %s, Duration: From %s",
+                TITLE_MEETING, DESC_A, timeRange1());
+        assertEquals(expected, event.toString());
+    }
+
+    @Test
+    public void toString_withoutDescription_formatsCorrectly() {
+        Event event = new Event(TITLE_MEETING, Optional.empty(), timeRange1());
+        String expected = String.format("Title: %s, Duration: From %s",
+                TITLE_MEETING, timeRange1());
+        assertEquals(expected, event.toString());
     }
 
     @Test

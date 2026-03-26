@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
-import seedu.address.model.person.Event;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Photo;
@@ -120,21 +119,6 @@ public class JsonAdaptedPersonTest {
                 new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
                         VALID_PHOTO, invalidTags, VALID_EVENTS);
         assertThrows(IllegalValueException.class, person::toModelType);
-    }
-
-    @Test
-    public void toModelType_duplicateEvents_throwsIllegalValueException() {
-        Event duplicatedEvent = new Event("Team Sync", "21-02-26 1000", "21-02-26 1100");
-        JsonAdaptedEvent adaptedEvent = new JsonAdaptedEvent(duplicatedEvent);
-        List<JsonAdaptedEvent> duplicatedEvents = List.of(adaptedEvent, adaptedEvent);
-
-        JsonAdaptedPerson person =
-                new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
-                    VALID_ADDRESS, VALID_PHOTO, VALID_TAGS, duplicatedEvents);
-
-        String expectedMessage = String.format(JsonAdaptedPerson.DUPLICATE_EVENT_MESSAGE_FORMAT,
-                VALID_NAME, duplicatedEvent);
-        assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
     }
 
     @Test

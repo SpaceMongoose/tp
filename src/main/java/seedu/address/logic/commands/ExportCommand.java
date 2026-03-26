@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.person.Event;
+import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Photo;
 
@@ -217,14 +217,18 @@ public class ExportCommand extends Command {
      * @param e The {@code Event} object to format.
      * @return A pipe-separated string of event details.
      */
+    // Event column becomes: Title|Description|Start|End
     private String formatSingleEvent(Event e) {
-        String sanitizedDesc = e.getDescription().replace("|", " ");
-        sanitizedDesc = sanitizedDesc.replace(";", " ");
+        String title = e.getTitle().fullTitle; // adjust if getter differs
+        String desc = e.getDescription().map(d -> d.fullDescription).orElse("");
+        String sanitizedTitle = title.replace("|", " ").replace(";", " ");
+        String sanitizedDesc = desc.replace("|", " ").replace(";", " ");
 
-        return String.format("%s|%s|%s",
+        return String.format("%s|%s|%s|%s",
+                sanitizedTitle,
                 sanitizedDesc,
-                e.getStartTime(),
-                e.getEndTime());
+                e.getStartTimeFormatted(), // or timeRange.getStartTimeFormatted()
+                e.getEndTimeFormatted());
     }
 
     /**

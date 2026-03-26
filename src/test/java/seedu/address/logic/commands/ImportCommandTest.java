@@ -23,7 +23,7 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
-import seedu.address.model.person.Event;
+import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
 
@@ -222,12 +222,15 @@ public class ImportCommandTest {
     @Test
     public void parseEvents_validEvents_success() {
         ImportCommand importCommand = new ImportCommand("add", "testFile");
-        String eventString = "Meeting|2026-05-06 10:00|2026-05-06 11:00; Lunch|12:00|13:00";
+        String eventString = "Meeting|Kickoff|2026-05-06 1000|2026-05-06 1100;"
+                + "Lunch||2026-05-06 1200|2026-05-06 1300";
         List<Event> result = importCommand.parseEvents(eventString);
 
         assertEquals(2, result.size());
-        assertEquals("Meeting", result.get(0).getDescription());
-        assertEquals("Lunch", result.get(1).getDescription());
+        assertEquals("Meeting", result.get(0).getTitle().fullTitle);
+        assertEquals("Kickoff", result.get(0).getDescription().get().fullDescription);
+        assertEquals("Lunch", result.get(1).getTitle().fullTitle);
+        assertTrue(result.get(1).getDescription().isEmpty());
     }
 
     @Test
@@ -240,12 +243,13 @@ public class ImportCommandTest {
 
     @Test
     public void parseEvents_malformedEntries_skipsInvalidEvents() {
-        String malformedString = "InvalidEvent|OnlyOnePipe; |Start|End; ValidEvent|Start|End";
+        String malformedString = "InvalidEvent|OnlyOnePipe; |Desc|Start|End; "
+                + "ValidEvent|Note|2026-05-06 1000|2026-05-06 1100";
         ImportCommand importCommand = new ImportCommand("add", "testFile");
         List<Event> result = importCommand.parseEvents(malformedString);
 
         assertEquals(1, result.size());
-        assertEquals("ValidEvent", result.get(0).getDescription());
+        assertEquals("ValidEvent", result.get(0).getTitle().fullTitle);
     }
 
     @Test

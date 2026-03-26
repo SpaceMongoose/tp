@@ -27,15 +27,15 @@ public class TypicalPersons {
             .withAddress("123, Jurong West Ave 6, #08-111").withEmail("alice@example.com")
             .withPhone("94351253")
             .withTags("friends")
-            .withEvents("Lunch,21-02-26 1200,21-02-26 1300")
+            .withEvents("Lunch,2026-02-21 1200,2026-02-21 1300")
             .build();
     public static final Person BENSON = new PersonBuilder().withName("Benson Meier")
             .withAddress("311, Clementi Ave 2, #02-25")
             .withEmail("johnd@example.com").withPhone("98765432")
             .withTags("owesMoney", "friends")
             .withEvents(
-                    "Client Call,21-02-26 0900,21-02-26 0930",
-                    "Project Review,21-02-27 1400,21-02-27 1500")
+                    "Client Call,2026-02-21 0900,2026-02-21 0930",
+                    "Project Review,2026-02-27 1400,2026-02-27 1500")
             .build();
     public static final Person CARL = new PersonBuilder().withName("Carl Kurz")
             .withPhone("95352563")

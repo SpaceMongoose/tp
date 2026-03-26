@@ -4,7 +4,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -17,7 +19,6 @@ import seedu.address.model.person.PersonInformation;
  * Keyword matching is case insensitive.
  */
 public class FindEventCommand extends Command {
-
     public static final String COMMAND_WORD = "view";
 
     public static final String MESSAGE_USAGE = "event " + COMMAND_WORD
@@ -26,6 +27,7 @@ public class FindEventCommand extends Command {
             + "Parameters: event view n/NAME [p/PHONE] [e/EMAIL] [a/ADDRESS]...\n"
             + "Example: event " + COMMAND_WORD + " n/yikleong";
 
+    private static final Logger logger = LogsCenter.getLogger(FindEventCommand.class);
     private final PersonInformation targetInfo;
 
     /**
@@ -47,27 +49,32 @@ public class FindEventCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
+        Person matchedPerson = targetPerson(model, targetInfo);
 
+        model.updateFilteredPersonList(person -> person.equals(matchedPerson));
+        model.updateFilteredEventList(event -> matchedPerson.getEvents().contains(event));
+        logger.info("FindEvent: matched " + matchedPerson.getName()
+                + ", events=" + model.getFilteredEventList().size());
+        return new CommandResult(
+                String.format(Messages.MESSAGE_EVENTS_LISTED_OVERVIEW, model.getFilteredEventList().size()));
+    }
+
+    private static Person targetPerson(Model model, PersonInformation targetInfo) throws CommandException {
         List<Person> matches = model.findPersons(targetInfo);
-
         if (matches.isEmpty()) {
-            model.updateFilteredPersonList(person -> false);
-            model.updateFilteredEventList(event -> false);
+            logger.info("FindEvent: no matches for " + targetInfo.name);
             throw new CommandException(Messages.MESSAGE_NO_MATCH);
         }
 
         if (matches.size() > 1) {
+            logger.info("FindEvent: multiple matches (" + matches.size() + ") for " + targetInfo.name);
             Set<Person> matchingPersons = Set.copyOf(matches);
             model.updateFilteredPersonList(matchingPersons::contains);
             model.updateFilteredEventList(event -> false);
             throw new CommandException(Messages.MESSAGE_MULTIPLE_MATCH);
         }
 
-        Person matchedPerson = matches.get(0);
-        model.updateFilteredPersonList(person -> person.equals(matchedPerson));
-        model.updateFilteredEventList(event -> matchedPerson.getEvents().contains(event));
-        return new CommandResult(
-                String.format(Messages.MESSAGE_EVENTS_LISTED_OVERVIEW, model.getFilteredEventList().size()));
+        return matches.get(0);
     }
 
     @Override

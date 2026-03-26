@@ -20,9 +20,12 @@ import seedu.address.commons.util.CsvUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
+import seedu.address.model.event.Description;
+import seedu.address.model.event.Event;
+import seedu.address.model.event.TimeRange;
+import seedu.address.model.event.Title;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
-import seedu.address.model.person.Event;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
@@ -262,7 +265,7 @@ public class ImportCommand extends Command {
 
     /**
      * Parses a semicolon-separated string of events, where each event is then
-     * split by pipes (|) into description, start time and end time.
+     * split by pipes (|) into title, description, start time and end time.
      *
      * @param eventString The raw string containing events.
      * @return A {@code List} of {@code Event} objects. Returns an empty list if the input is empty or malformed.
@@ -277,15 +280,22 @@ public class ImportCommand extends Command {
         String[] eventEntries = eventString.split(";");
 
         for (String entry : eventEntries) {
-            String[] details = entry.trim().split("\\|", 3);
+            String[] details = entry.trim().split("\\|", 4);
 
-            if (details.length == 3) {
-                String description = details[0].trim();
-                String start = details[1].trim();
-                String end = details[2].trim();
+            if (details.length == 4) {
+                String titleStr = details[0].trim();
+                String descStr = details[1].trim();
+                String startStr = details[2].trim();
+                String endStr = details[3].trim();
 
-                if (!description.isEmpty() && !start.isEmpty() && !end.isEmpty()) {
-                    events.add(new Event(description, start, end));
+                if (!titleStr.isEmpty() && !startStr.isEmpty() && !endStr.isEmpty()) {
+                    Title title = new Title(titleStr);
+                    Optional<Description> desc = descStr.isEmpty()
+                            ? Optional.empty()
+                            : Optional.of(new Description(descStr));
+                    TimeRange timeRange = new TimeRange(startStr, endStr);
+
+                    events.add(new Event(title, desc, timeRange));
                 }
             }
         }

@@ -14,9 +14,14 @@ import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BOB;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.model.event.Event;
+import seedu.address.model.event.TimeRange;
+import seedu.address.model.event.Title;
 import seedu.address.testutil.PersonBuilder;
 
 public class PersonTest {
@@ -86,7 +91,7 @@ public class PersonTest {
 
         // different events -> returns false
         editedAlice = new PersonBuilder(ALICE)
-                .withEvents("Project meeting,21-02-26 1100,21-02-26 1200")
+                .withEvents("Project meeting,2026-02-21 1100,2026-02-21 1200")
                 .build();
         assertFalse(ALICE.equals(editedAlice));
 
@@ -96,12 +101,11 @@ public class PersonTest {
     }
 
     @Test
-    public void constructor_withUniqueEventList_setsEventsCorrectly() {
-        UniqueEventList events = new UniqueEventList();
-        Event event = new Event("Meeting", "21-02-26 1100", "21-02-26 1500");
-        events.add(event);
+    public void constructor_withEventList_setsEventsCorrectly() {
+        Event event = new Event(new Title("Meeting"), Optional.empty(),
+                new TimeRange("2026-02-21 1100", "2026-02-21 1500"));
         Person person = new Person(ALICE.getName(), ALICE.getPhone(),
-                ALICE.getEmail(), ALICE.getAddress(), Collections.emptySet(), events, ALICE.getPhoto());
+                ALICE.getEmail(), ALICE.getAddress(), Collections.emptySet(), List.of(event), ALICE.getPhoto());
         assertEquals(ALICE.getName(), person.getName());
         assertTrue(person.getEvents().contains(event));
     }

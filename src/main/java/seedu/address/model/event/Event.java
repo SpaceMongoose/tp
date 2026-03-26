@@ -5,9 +5,6 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import java.util.Objects;
 import java.util.Optional;
 
-import seedu.address.commons.util.ToStringBuilder;
-
-
 /**
  * Represents an Event in the address book.
  */
@@ -100,11 +97,12 @@ public class Event {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .add("Title", title)
-                .add("Description", description.map(Description::toString).orElse(""))
-                .add("Duration", timeRange)
-                .toString();
+        String duration = "From " + timeRange;
+        if (description.isPresent()) {
+            return String.format("Title: %s, Description: %s, Duration: %s",
+                    title, description.get(), duration);
+        }
+        return String.format("Title: %s, Duration: %s", title, duration);
     }
 
     /**

@@ -2,17 +2,17 @@ package seedu.address.model.person;
 
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.event.Event;
 import seedu.address.model.tag.Tag;
-
-
 
 /**
  * Represents a Person in the address book.
@@ -32,7 +32,7 @@ public class Person {
 
 
     // Event fields
-    private final UniqueEventList events;
+    private final List<Event> events;
 
     /**
      * Name and phone are compulsory. Email and address are optional.
@@ -45,16 +45,15 @@ public class Person {
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
-        this.events = new UniqueEventList();
+        this.events = new ArrayList<>();
         this.photo = photo;
     }
 
     /**
      * Overloaded constructor: Name and phone are compulsory. Email and address are optional.
-     * UniqueEventList is compulsory
      */
     public Person(Name name, Phone phone, Optional<Email> email, Optional<Address> address,
-        Set<Tag> tags, UniqueEventList events, Optional<Photo> photo) {
+        Set<Tag> tags, List<Event> events, Optional<Photo> photo) {
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -95,8 +94,8 @@ public class Person {
     /**
      * Returns an immutable Event List
      */
-    public ObservableList<Event> getEvents() {
-        return this.events.asUnmodifiableObservableList();
+    public List<Event> getEvents() {
+        return this.events;
     }
 
     /**
@@ -130,23 +129,16 @@ public class Person {
      */
     @Override
     public boolean equals(Object other) {
-        if (other == this) {
-            return true;
+        if (other instanceof Person otherPerson) {
+            return name.equals(otherPerson.name)
+                    && phone.equals(otherPerson.phone)
+                    && email.equals(otherPerson.email)
+                    && address.equals(otherPerson.address)
+                    && tags.equals(otherPerson.tags)
+                    && events.equals(otherPerson.events)
+                    && photo.equals(otherPerson.photo);
         }
-
-        // instanceof handles nulls
-        if (!(other instanceof Person)) {
-            return false;
-        }
-
-        Person otherPerson = (Person) other;
-        return name.equals(otherPerson.name)
-                && phone.equals(otherPerson.phone)
-                && email.equals(otherPerson.email)
-                && address.equals(otherPerson.address)
-                && tags.equals(otherPerson.tags)
-                && events.equals(otherPerson.events)
-                && photo.equals(otherPerson.photo);
+        return false;
     }
 
     @Override

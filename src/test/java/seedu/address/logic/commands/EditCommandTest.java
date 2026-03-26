@@ -11,6 +11,7 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.logic.commands.CommandTestUtil.showPersonAtIndex;
+import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
@@ -31,9 +32,8 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
-import seedu.address.model.person.Event;
+import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
-import seedu.address.model.person.Photo;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 import seedu.address.testutil.PersonBuilder;
 
@@ -59,6 +59,7 @@ public class EditCommandTest {
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expectedModel.setPerson(model.getFilteredPersonList().get(0), editedPerson);
+        expectedModel.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }
@@ -80,6 +81,7 @@ public class EditCommandTest {
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expectedModel.setPerson(lastPerson, editedPerson);
+        expectedModel.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }
@@ -212,8 +214,6 @@ public class EditCommandTest {
             Files.createFile(sourceFile);
             String pathToSourceFile = sourceFile.toString().replace("\\", "/");
 
-            Photo expectedPhoto = PhotoStorageUtil.copyPhotoToDirectory(new Photo(pathToSourceFile));
-
             Index indexLastPerson = Index.fromOneBased(model.getFilteredPersonList().size());
             Person lastPerson = model.getFilteredPersonList().get(indexLastPerson.getZeroBased());
             PersonBuilder personInList = new PersonBuilder(lastPerson);
@@ -225,7 +225,7 @@ public class EditCommandTest {
 
             Person editedPerson = personInList.withName(VALID_NAME_BOB)
                     .withPhone(VALID_PHONE_BOB)
-                    .withPhoto(expectedPhoto.getPath())
+                    .withPhoto(pathToSourceFile)
                     .withTags(VALID_TAG_HUSBAND).build();
 
             EditCommand editCommand = new EditCommand(indexLastPerson, descriptor);
@@ -234,6 +234,7 @@ public class EditCommandTest {
 
             Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
             expectedModel.setPerson(lastPerson, editedPerson);
+            expectedModel.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
 
             assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
         } finally {
@@ -287,6 +288,7 @@ public class EditCommandTest {
             Person lastPerson = model.getFilteredPersonList().get(indexLastPerson.getZeroBased());
             Person personWithPhoto = new PersonBuilder(lastPerson).withPhoto(existingPhotoPath).build();
             model.setPerson(lastPerson, personWithPhoto);
+            model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
 
             EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
                     .withPhoto(existingPhotoPath)
@@ -298,6 +300,7 @@ public class EditCommandTest {
 
             Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
             expectedModel.setPerson(personWithPhoto, personWithPhoto);
+            expectedModel.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
             assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
         } finally {
             PhotoStorageUtil.setImageDirectory(originalDir);

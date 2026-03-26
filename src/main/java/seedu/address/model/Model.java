@@ -6,8 +6,7 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
-import seedu.address.model.person.Event;
-import seedu.address.model.person.Name;
+import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonInformation;
 
@@ -91,9 +90,32 @@ public interface Model {
     void updateFilteredPersonList(Predicate<Person> predicate);
 
     /**
-     * Return the correct contact based on the optional
+     * Return a list of correct contact(s) based on the optional parameters provided
      */
-    Person findPersonByName(Name name);
+    List<Person> findPersons(PersonInformation info);
+
+    /**
+     * Returns true if an event with the same identity as {@code event} exists.
+     */
+    boolean hasEvent(Event event);
+
+    /**
+     * Adds the given event.
+     * The event must not already exist in the address book.
+     */
+    void addEvent(Event event);
+
+    /**
+     * Deletes the given event.
+     * The event must exist in the address book.
+     */
+    void deleteEvent(Event target);
+
+    /**
+     * Replaces the given event {@code target} with {@code editedEvent}.
+     * {@code target} must exist and {@code editedEvent} must not duplicate another event.
+     */
+    void setEvent(Event target, Event editedEvent);
 
     /** Returns an unmodifiable view of the filtered event list */
     ObservableList<Event> getFilteredEventList();
@@ -104,11 +126,9 @@ public interface Model {
      */
     void updateFilteredEventList(Predicate<Event> predicate);
 
-    /**
-     * Return a list of correct contact(s) based on the optional parameters provided
-     */
-    List<Person> findPersons(PersonInformation info);
+    Event linkPersonToEvent(Event eventToAdd);
 
+    Event unlinkPersonFromEvent(Event eventToUnlink);
 
 }
 

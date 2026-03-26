@@ -8,6 +8,8 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddCommand;
@@ -24,7 +26,10 @@ import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.person.Event;
+import seedu.address.model.event.Description;
+import seedu.address.model.event.Event;
+import seedu.address.model.event.TimeRange;
+import seedu.address.model.event.Title;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonInformation;
@@ -45,14 +50,15 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_eventAdd() throws Exception {
-        Event expectedEvent = new Event("Complete feature list", "21-02-26 1100",
-            "21-02-26 1500");
+        Event expectedEvent = new Event(new Title("Complete feature list"),
+                Optional.of(new Description("All tasks")),
+                new TimeRange("2026-02-21 1100", "2026-02-21 1500"));
         AddEventCommand expectedCommand = new AddEventCommand(
                 new PersonInformation(new Name("Lee eejoong"), null, null, null, null), expectedEvent);
 
         AddEventCommand command = (AddEventCommand) parser.parseCommand(
-                "event add d/Complete feature list start/21-02-26 1100 "
-                        + "end/21-02-26 1500 to/Lee eejoong");
+                "event add title/Complete feature list desc/All tasks start/2026-02-21 1100 "
+                        + "end/2026-02-21 1500 to/Lee eejoong");
 
         assertEquals(expectedCommand, command);
     }
