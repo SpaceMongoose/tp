@@ -55,8 +55,8 @@ public class AddEventParser implements Parser<AddEventCommand> {
                 PREFIX_TITLE, PREFIX_DESC, PREFIX_START, PREFIX_END, PREFIX_TO,
                 PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS);
 
+        Event event = createEvent(argMultimap);
         try {
-            Event event = createEvent(argMultimap);
             PersonInformation targetInfo = createPersonInformation(argMultimap);
             return new AddEventCommand(targetInfo, event);
         } catch (ParseException pe) {

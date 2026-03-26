@@ -58,6 +58,35 @@ public class TimeRangeTest {
     }
 
     @Test
+    public void isOverlapping_overlappingRanges_returnsTrue() {
+        TimeRange a = new TimeRange("2026-03-25 0900", "2026-03-25 1100");
+        TimeRange b = new TimeRange("2026-03-25 1000", "2026-03-25 1200");
+        assertTrue(a.isOverlapping(b));
+        assertTrue(b.isOverlapping(a));
+    }
+
+    @Test
+    public void isOverlapping_nonOverlappingRanges_returnsFalse() {
+        TimeRange a = new TimeRange("2026-03-25 0900", "2026-03-25 1000");
+        TimeRange b = new TimeRange("2026-03-25 1000", "2026-03-25 1100");
+        assertFalse(a.isOverlapping(b));
+    }
+
+    @Test
+    public void isValidDateTimeFormat_validFormat_returnsTrue() {
+        assertTrue(TimeRange.isValidDateTimeFormat("2026-03-25 0900"));
+        assertTrue(TimeRange.isValidDateTimeFormat("2026-12-01 2359"));
+    }
+
+    @Test
+    public void isValidDateTimeFormat_invalidFormat_returnsFalse() {
+        assertFalse(TimeRange.isValidDateTimeFormat("25-03-2026 0900"));
+        assertFalse(TimeRange.isValidDateTimeFormat("2026/03/25 0900"));
+        assertFalse(TimeRange.isValidDateTimeFormat("not-a-date"));
+        assertFalse(TimeRange.isValidDateTimeFormat(""));
+    }
+
+    @Test
     public void toString_formatsRange() {
         TimeRange range = new TimeRange("2026-03-25 0900", "2026-03-25 1000");
         assertEquals("2026-03-25 0900 to 2026-03-25 1000", range.toString());

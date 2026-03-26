@@ -55,8 +55,8 @@ public class DeleteEventParser implements Parser<DeleteEventCommand> {
                 PREFIX_TITLE, PREFIX_START, PREFIX_END, PREFIX_NAME,
                 PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS);
 
+        Event eventToDelete = createEvent(argMultimap);
         try {
-            Event eventToDelete = createEvent(argMultimap);
             PersonInformation targetInfo = createPersonInformation(argMultimap);
             return new DeleteEventCommand(targetInfo, eventToDelete);
         } catch (ParseException pe) {

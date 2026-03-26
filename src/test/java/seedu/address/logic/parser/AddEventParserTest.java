@@ -3,6 +3,8 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import static seedu.address.model.event.TimeRange.MESSAGE_END_NOT_AFTER_START;
+import static seedu.address.model.event.TimeRange.MESSAGE_INVALID_DATETIME_FORMAT;
 
 import java.util.Optional;
 
@@ -130,5 +132,29 @@ public class AddEventParserTest {
     public void parse_emptyArgs_failure() {
         assertParseFailure(parser, "  ",
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
+    }
+
+    @Test
+    public void parse_invalidDateTimeFormat_failure() {
+        // Wrong date format: day/month/year instead of year-month-day
+        assertParseFailure(parser,
+                " title/Meeting start/25-03-2026 0900 end/25-03-2026 1000 to/" + VALID_NAME,
+                MESSAGE_INVALID_DATETIME_FORMAT);
+    }
+
+    @Test
+    public void parse_endNotAfterStart_failure() {
+        // Same start and end time
+        assertParseFailure(parser,
+                " title/Meeting start/" + VALID_START + " end/" + VALID_START + " to/" + VALID_NAME,
+                MESSAGE_END_NOT_AFTER_START);
+    }
+
+    @Test
+    public void parse_endBeforeStart_failure() {
+        // End is before start
+        assertParseFailure(parser,
+                " title/Meeting start/" + VALID_END + " end/" + VALID_START + " to/" + VALID_NAME,
+                MESSAGE_END_NOT_AFTER_START);
     }
 }
