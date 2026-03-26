@@ -6,6 +6,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.Objects;
 
 /**
@@ -14,7 +15,8 @@ import java.util.Objects;
  */
 public class TimeRange {
     public static final String DATE_TIME_PATTERN = "yyyy-MM-dd HHmm";
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+    public static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm").withResolverStyle(ResolverStyle.STRICT);
     public static final String MESSAGE_INVALID_DATETIME_FORMAT =
             "Invalid date/time format. Expected: " + DATE_TIME_PATTERN + " (e.g. 2026-03-25 0900).";
     public static final String MESSAGE_END_NOT_AFTER_START =
