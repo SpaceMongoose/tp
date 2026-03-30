@@ -17,7 +17,7 @@ public class ListCommand extends Command {
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
-        model.showAllPersons();
+        model.showAllPersonsPinnedFirst();
         return new CommandResult(MESSAGE_SUCCESS);
     }
 }
