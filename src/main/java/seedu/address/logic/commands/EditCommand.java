@@ -31,7 +31,6 @@ import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonInformation;
 import seedu.address.model.person.Phone;
 import seedu.address.model.person.Photo;
-import seedu.address.model.person.TagContainsKeywordsPredicate;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -64,7 +63,7 @@ public class EditCommand extends Command {
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited Person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_NO_CHANGES_DONE = "No changes done.";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_DUPLICATE_PERSON = "A contact with the same phone number already exists.";
 
     private final PersonInformation targetInfo;
     private final EditPersonDescriptor editPersonDescriptor;
@@ -90,13 +89,6 @@ public class EditCommand extends Command {
         requireNonNull(model);
         List<Person> listOfPersonsToEdit = model.findPersons(this.targetInfo);
 
-        // Backward-compatible fallback for target tag matching with case-insensitive semantics.
-        if (listOfPersonsToEdit.isEmpty() && !targetInfo.tags.isEmpty()) {
-            listOfPersonsToEdit = model.getAddressBook().getPersonList().stream()
-                    .filter(person -> matchesInformationWithCaseInsensitiveTags(person, targetInfo))
-                    .toList();
-        }
-
         // Case 1: No match found
         if (listOfPersonsToEdit.isEmpty()) {
             throw new CommandException(Messages.MESSAGE_NO_MATCH);
@@ -114,6 +106,7 @@ public class EditCommand extends Command {
         Person personToEdit = listOfPersonsToEdit.get(0);
         Person previewPerson = createEditedPerson(personToEdit, editPersonDescriptor);
 
+        //If edit is not the same, but phone number already exsist to another person
         if (!personToEdit.isSamePerson(previewPerson) && model.hasPerson(previewPerson)) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         }
@@ -140,6 +133,8 @@ public class EditCommand extends Command {
         }
 
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
+
+        //If edit is the same as before, do not proceed with edit and return appropriate message
         if (personToEdit.equals(editedPerson)) {
             return new CommandResult(MESSAGE_NO_CHANGES_DONE);
         }
@@ -147,30 +142,6 @@ public class EditCommand extends Command {
         model.setPerson(personToEdit, editedPerson);
         model.updateFilteredPersonList(p -> p.equals(editedPerson));
         return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)));
-    }
-
-    private static boolean matchesInformationWithCaseInsensitiveTags(Person person, PersonInformation info) {
-        if (!person.getName().equalsIgnoreCase(info.name)) {
-            return false;
-        }
-        if (!info.phone.map(ph -> ph.equals(person.getPhone())).orElse(true)) {
-            return false;
-        }
-        if (!info.email.map(em -> person.getEmail().map(e -> em.equals(e)).orElse(false)).orElse(true)) {
-            return false;
-        }
-        if (!info.address.map(ad -> person.getAddress().map(a -> ad.equals(a)).orElse(false)).orElse(true)) {
-            return false;
-        }
-        if (!info.tags.isEmpty() && !containsAllTagsIgnoreCase(person, info.tags)) {
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean containsAllTagsIgnoreCase(Person person, Set<Tag> targetTags) {
-        return targetTags.stream().allMatch(targetTag ->
-                new TagContainsKeywordsPredicate(List.of(targetTag.tagName)).test(person));
     }
 
     /**
