@@ -75,16 +75,16 @@ public class PersonCard extends UiPart<Region> {
         super(FXML);
         this.person = person;
         id.setText(displayedIndex + ". ");
-        name.setText(person.getName().fullName);
+        name.setText(person.getNameString());
         personCardSlidingAccent.visibleProperty().bind(
                 this.getRoot().focusedProperty().or(this.getRoot().hoverProperty())
         );
-        phone.setText(person.getPhone().value);
-        address.setText(person.getAddress().map(addr -> addr.value).orElse(""));
-        email.setText(person.getEmail().map(email -> email.value).orElse(""));
-        person.getTags().stream()
-                .sorted(Comparator.comparing(tag -> tag.tagName))
-                .forEach(tag -> tags.getChildren().add(createTagLabel(tag.tagName)));
+        phone.setText(person.getPhoneString());
+        address.setText(person.getAddressString().orElse(""));
+        email.setText(person.getEmailString().orElse(""));
+        person.getTagNames().stream()
+                .sorted()
+                .forEach(tagName -> tags.getChildren().add(createTagLabel(tagName)));
         handlePhoto(person);
     }
 
@@ -150,17 +150,17 @@ public class PersonCard extends UiPart<Region> {
         Image profilePicture = null;
 
         try {
-            if (person.getPhoto().isEmpty()) {
+            if (person.getPhotoPath().isEmpty()) {
                 java.io.InputStream stream = this.getClass().getResourceAsStream(DEFAULT_IMAGE);
                 if (stream != null) {
                     profilePicture = new Image(stream);
                 }
             } else {
-                String fileUri = Paths.get(person.getPhoto().get().getPath()).toUri().toString();
+                String fileUri = Paths.get(person.getPhotoPath().get()).toUri().toString();
                 profilePicture = new Image(fileUri);
             }
         } catch (Exception e) {
-            // Handle silently
+            logger.info("Unable to load photo for : " + person.getNameString());
         }
 
         if (profilePicture != null && !profilePicture.isError()) {

@@ -100,12 +100,25 @@ public class Person {
         return this.address.map(a -> a.value);
     }
 
+    public Optional<String> getPhotoPath() {
+        return photo.map(Photo::getPath);
+    }
+
     /**
      * Returns an immutable tag set, which throws {@code UnsupportedOperationException}
      * if modification is attempted.
      */
     public Set<Tag> getTags() {
         return Collections.unmodifiableSet(tags);
+    }
+
+    /**
+     * Returns a list of tag names associated with the person.
+     */
+    public List<String> getTagNames() {
+        return tags.stream()
+                .map(tag -> tag.tagName)
+                .collect(Collectors.toList());
     }
 
     /**
