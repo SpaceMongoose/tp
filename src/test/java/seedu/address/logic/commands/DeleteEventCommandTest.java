@@ -220,9 +220,6 @@ public class DeleteEventCommandTest {
         @Override public void showMatchingPersons(java.util.Set<Person> persons) {
             throw new AssertionError("This method should not be called.");
         }
-        @Override public void pinPerson(Person person) {
-            throw new AssertionError("This method should not be called.");
-        }
         @Override public void showEventsForPerson(Person person) {
             throw new AssertionError("This method should not be called.");
         }
@@ -254,6 +251,20 @@ public class DeleteEventCommandTest {
             throw new AssertionError("This method should not be called.");
         }
         @Override public boolean hasOverlappingEvent(Event event) {
+            throw new AssertionError("This method should not be called.");
+        }
+        @Override
+        public void pinPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void unpinPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public boolean isPersonPinned(Person person) {
             throw new AssertionError("This method should not be called.");
         }
     }
@@ -301,6 +312,21 @@ public class DeleteEventCommandTest {
         public Event unlinkPersonFromEvent(Event eventToUnlink) {
             unlinkCalled = true;
             return this.eventToUnlink;
+        }
+
+        @Override
+        public void pinPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void unpinPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public boolean isPersonPinned(Person person) {
+            throw new AssertionError("This method should not be called.");
         }
     }
 

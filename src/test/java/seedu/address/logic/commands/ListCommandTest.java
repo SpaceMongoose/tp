@@ -47,6 +47,7 @@ public class ListCommandTest {
     public void execute_whenPersonPinned_showsPinnedPersonFirst() {
         Person personToPin = model.getFilteredPersonList().get(2);
         model.pinPerson(personToPin);
+        expectedModel.pinPerson(expectedModel.getFilteredPersonList().get(2));
 
         assertCommandSuccess(new ListCommand(), model, ListCommand.MESSAGE_SUCCESS, expectedModel);
         assertEquals(personToPin, model.getFilteredPersonList().get(0));

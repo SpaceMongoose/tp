@@ -39,6 +39,7 @@ public class PinCommandTest {
 
         String expectedMessage = String.format(PinCommand.MESSAGE_PIN_PERSON_SUCCESS, Messages.format(personToPin));
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.pinPerson(personToPin);
 
         assertCommandSuccess(pinCommand, model, expectedMessage, expectedModel);
     }
@@ -81,6 +82,7 @@ public class PinCommandTest {
 
         String expectedMessage = String.format(PinCommand.MESSAGE_PIN_PERSON_SUCCESS, Messages.format(secondMatch));
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.pinPerson(secondMatch);
 
         assertCommandSuccess(pinCommand, model, expectedMessage, expectedModel);
     }
