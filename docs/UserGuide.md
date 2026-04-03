@@ -165,6 +165,35 @@ Examples:
 * `filter t/friends` finds all contacts that are tagged `friends`
 * `filter t/cs2103, cs2105, cs2109s` finds all contacts that have any of these tags.
 
+### Pinning a person : `pin`
+
+Pins the person identified by their name.
+
+Format: `pin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
+
+* Pinned persons are shown first when the `list` command is used.
+* The `NAME` is case-insensitive. e.g. `aLeX YeOH` will match `Alex Yeoh`
+* Only full words will be matched e.g. `Alex Yeo` will not match `Alex Yeoh`
+* Order of parameters does not matter.
+
+Examples:
+* `pin n/John Doe` pins John Doe when the name uniquely identifies the contact.
+* `pin n/John Doe p/91234567` pins the matching John Doe contact by name and phone number.
+
+### Unpinning a person : `unpin`
+
+Unpins the person identified by their name.
+
+Format: `unpin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
+
+* The `NAME` is case-insensitive. e.g. `aLeX YeOH` will match `Alex Yeoh`
+* Only full words will be matched e.g. `Alex Yeo` will not match `Alex Yeoh`
+* Order of parameters does not matter.
+
+Examples:
+* `unpin n/John Doe` unpins John Doe when the name uniquely identifies the contact.
+* `unpin n/John Doe p/91234567` unpins the matching John Doe contact by name and phone number.
+
 ### Deleting a person : `delete`
 
 Deletes the specified person from the address book.
@@ -288,6 +317,8 @@ Action     | Format, Examples
 **Event View** | `event view n/NAME [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `event view n/Bernice Yu`
 **Exit**   | `exit`
 **Filter** | `filter t/TAG[, TAG]...`<br> e.g., `filter t/friends`
+**Pin**    | `pin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `pin n/John Doe p/91234567`
+**Unpin**  | `unpin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `unpin n/John Doe p/91234567`
 **Find**   | `find n/NAME [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `find n/James Jake p/67676969`
 **Help**   | `help`
 **List**   | `list`
