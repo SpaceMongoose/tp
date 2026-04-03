@@ -119,7 +119,7 @@ public class PhotoStorageUtilTest {
     public void copyPhotoToDirectory_missingImageDirectory_createsDirectory() throws IOException {
         // Set the image directory to a non-existent directory first
         Path missingDir = sharedTempFolder.resolve("this_folder_does_not_exist");
-        String missingDirPath = PhotoStorageUtil.formatPath(missingDir) + "/";
+        String missingDirPath = PhotoStorageUtil.formatPath(missingDir);
         PhotoStorageUtil.setImageDirectory(missingDirPath);
 
         assertFalse(Files.exists(missingDir));
