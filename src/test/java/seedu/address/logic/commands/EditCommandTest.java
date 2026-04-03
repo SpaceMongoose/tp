@@ -428,7 +428,7 @@ public class EditCommandTest {
             Person storedPerson = model.getFilteredPersonList().get(0);
             assertTrue(storedPerson.getPhoto().isPresent());
             assertNotEquals(pathToSourceFile, storedPerson.getPhoto().get().getPath());
-            assertTrue(storedPerson.getPhoto().get().isSavedLocally());
+            assertTrue(PhotoStorageUtil.isSavedLocally(storedPerson.getPhoto().get()));
             assertTrue(Files.exists(Path.of(storedPerson.getPhoto().get().getPath())));
         } finally {
             PhotoStorageUtil.setImageDirectory(originalDir);

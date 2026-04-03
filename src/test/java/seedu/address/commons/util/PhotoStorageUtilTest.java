@@ -54,7 +54,7 @@ public class PhotoStorageUtilTest {
 
         // Assert
         assertNotEquals(imageFile.getPath(), result.getPath()); // raw path (from user) vs uuid encoded path (to test)
-        assertTrue(result.isSavedLocally());
+        assertTrue(PhotoStorageUtil.isSavedLocally(result));
         assertTrue(Files.exists(Paths.get(result.getPath())));
 
     }
@@ -73,7 +73,7 @@ public class PhotoStorageUtilTest {
         Photo imageFile = new Photo(sourceFile.toString().replace("\\", "/"));
 
         assertTrue(Files.exists(sourceFile));
-        assertTrue(imageFile.isSavedLocally());
+        assertTrue(PhotoStorageUtil.isSavedLocally(imageFile));
 
         PhotoStorageUtil.deletePhoto(imageFile);
         assertFalse(Files.exists(sourceFile));
@@ -89,7 +89,7 @@ public class PhotoStorageUtilTest {
         Files.createFile(dummyDir.resolve("dummy.jpg"));
         Photo dummyPhoto = new Photo(dummyDir.toString().replace("\\", "/"));
 
-        assertTrue(dummyPhoto.isSavedLocally());
+        assertTrue(PhotoStorageUtil.isSavedLocally(dummyPhoto));
         assertTrue(Files.exists(dummyDir));
 
         assertThrows(IOException.class, () -> PhotoStorageUtil.deletePhoto(dummyPhoto));
@@ -101,7 +101,7 @@ public class PhotoStorageUtilTest {
         Files.createDirectory(dummyFile);
         Photo dummyPhoto = new Photo(dummyFile.toString().replace("\\", "/"));
 
-        assertFalse(dummyPhoto.isSavedLocally());
+        assertFalse(PhotoStorageUtil.isSavedLocally(dummyPhoto));
         assertTrue(Files.exists(dummyFile));
 
         PhotoStorageUtil.deletePhoto(dummyPhoto);
@@ -114,6 +114,23 @@ public class PhotoStorageUtilTest {
                 .toString().replace("\\", "/"));
 
         assertThrows(IOException.class, () -> PhotoStorageUtil.copyPhotoToDirectory(localPhoto));
+    }
+
+    @Test
+    public void copyPhotoToDirectory_missingImageDirectory_createsDirectory() throws IOException {
+        // Set the image directory to a non-existent directory first
+        Path missingDir = sharedTempFolder.resolve("this_folder_does_not_exist");
+        String missingDirPath = missingDir.toString().replace("\\", "/") + "/";
+        PhotoStorageUtil.setImageDirectory(missingDirPath);
+
+        assertFalse(Files.exists(missingDir));
+
+        Path dummyFile = userFolder.resolve("do_not_delete_me.jpg");
+        Files.createFile(dummyFile);
+        Photo dummyPhoto = new Photo(dummyFile.toString().replace("\\", "/"));
+
+        PhotoStorageUtil.copyPhotoToDirectory(dummyPhoto);
+        assertTrue(Files.exists(missingDir));
     }
 
     @Test
