@@ -67,15 +67,18 @@ public class PersonCard extends UiPart<Region> {
     private Label altText;
     @FXML
     private Rectangle personCardSlidingAccent;
+    @FXML
+    private Label pinLabel;
 
     /**
      * Creates a {@code PersonCode} with the given {@code Person} and index to display.
      */
-    public PersonCard(Person person, int displayedIndex) {
+    public PersonCard(Person person, int displayedIndex, boolean isPinned) {
         super(FXML);
         this.person = person;
         id.setText(displayedIndex + ". ");
         name.setText(person.getName().fullName);
+        pinLabel.setVisible(isPinned);
         personCardSlidingAccent.visibleProperty().bind(
                 this.getRoot().focusedProperty().or(this.getRoot().hoverProperty())
         );
