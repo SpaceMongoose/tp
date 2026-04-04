@@ -190,6 +190,12 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public void showPerson(Person person) {
+        requireNonNull(person);
+        updateFilteredPersonList(p -> p.equals(person));
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (other instanceof ModelManager otherModelManager) {
             return addressBook.equals(otherModelManager.addressBook)
@@ -214,6 +220,11 @@ public class ModelManager implements Model {
     public void updateFilteredEventList(Predicate<Event> predicate) {
         requireNonNull(predicate);
         filteredEvents.setPredicate(predicate);
+    }
+
+    @Override
+    public void showNoEvents() {
+        filteredEvents.setPredicate(e -> false);
     }
 
     @Override
@@ -262,4 +273,3 @@ public class ModelManager implements Model {
     }
 
 }
-

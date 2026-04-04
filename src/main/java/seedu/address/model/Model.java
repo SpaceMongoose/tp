@@ -107,6 +107,12 @@ public interface Model {
     void showMatchingPersons(Set<Person> persons);
 
     /**
+     * Filters the person list to show only {@code person}.
+     * Does not modify the event list.
+     */
+    void showPerson(Person person);
+
+    /**
      * Return a list of correct contact(s) based on the optional parameters provided
      */
     List<Person> findPersons(PersonInformation info);
@@ -148,6 +154,11 @@ public interface Model {
      */
     void updateFilteredEventList(Predicate<Event> predicate);
 
+    /**
+     * Filters the filtered event list to show no events.
+     */
+    void showNoEvents();
+
     Event linkPersonToEvent(Event eventToAdd);
 
     Event unlinkPersonFromEvent(Event eventToUnlink);
@@ -159,4 +170,3 @@ public interface Model {
     void showEventsForPerson(Person person);
 
 }
-
