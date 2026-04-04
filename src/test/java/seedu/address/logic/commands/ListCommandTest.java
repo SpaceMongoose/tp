@@ -48,6 +48,7 @@ public class ListCommandTest {
         Person personToPin = model.getFilteredPersonList().get(2);
         model.pinPerson(personToPin);
         expectedModel.pinPerson(expectedModel.getFilteredPersonList().get(2));
+        expectedModel.updateFilteredEventList(event -> false);
 
         assertCommandSuccess(new ListCommand(), model, ListCommand.MESSAGE_SUCCESS, expectedModel);
         assertEquals(personToPin, model.getFilteredPersonList().get(0));
