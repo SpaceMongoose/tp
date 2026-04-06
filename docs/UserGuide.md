@@ -251,7 +251,7 @@ This `add` feature allows you to add a person to the address book.
 Format: `add n/NAME p/PHONE_NUMBER [e/EMAIL] [a/ADDRESS] [t/TAG]... [pfp/PHOTO_PATH]`
 
 
-<panel header=":fa-solid-code: **Examples**" type="info" expanded>
+<panel header=":fa-solid-code: **Examples**" type="info">
 
 - `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`<br>
   Adds a new contact named John Doe with a phone number, email, and address.
@@ -264,7 +264,7 @@ Format: `add n/NAME p/PHONE_NUMBER [e/EMAIL] [a/ADDRESS] [t/TAG]... [pfp/PHOTO_P
 
 </panel>
 
-<panel header=":fa-solid-exclamation-triangle: **Important**" type="danger" expanded>
+<panel header=":fa-solid-exclamation-triangle: **Important**" type="danger">
 
 - `add` command with `pfp/` succeeds only if the image file exists, is readable, and is a supported image format.
 - Contact cannot be added if the added phone number is already registered in the address book.
@@ -440,7 +440,7 @@ Format: `event add title/TITLE [desc/DESCRIPTION] start/START_DATE end/END_DATE 
 * Order of parameters does not matter.
 * The date time format for `start/` and `end/` is `YYYY-MM-DD HHmm` or `DD-MM-YYYY HHmm`.
 
-<panel header=":fa-solid-code: **Examples**" type="info" expanded>
+<panel header=":fa-solid-code: **Examples**" type="info">
 
 - `event add title/CS2109S Meeting desc/Final discussion on problem set 1 start/2026-03-25 0900 end/2026-03-25 1000 to/David Li`<br>
   Adds an event titled "CS2109S Meeting" to David Li.
@@ -450,7 +450,7 @@ Format: `event add title/TITLE [desc/DESCRIPTION] start/START_DATE end/END_DATE 
 
 </panel>
 
-<panel header=":fa-solid-lightbulb: **Tip: Disambiguating contacts with the same name**" type="success">
+<panel header=":fa-solid-exclamation-triangle: **Important: Disamiguating contacts with the same name**" type="danger">
 
 Add optional parameters immediately after `to/NAME` to narrow down the match — Phone number, Email, Address, or Tag. See [User Disambiguation](#user-disambiguation) for details.
 
@@ -465,7 +465,7 @@ Format: `event view n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
 * The `NAME` is case-insensitive. e.g. `aLeX YeOH` will match `Alex Yeoh`.
 * Only full words will be matched e.g. `Alex Yeo` will not match `Alex Yeoh`.
 
-<panel header=":fa-solid-code: **Examples**" type="info" expanded>
+<panel header=":fa-solid-code: **Examples**" type="info">
 
 - `event view n/Bernice Yu`<br>
   Views all events for Bernice Yu.
@@ -475,7 +475,7 @@ Format: `event view n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
 
 </panel>
 
-<panel header=":fa-solid-lightbulb: **Tip: Disambiguating contacts with the same name**" type="success">
+<panel header=":fa-solid-exclamation-triangle: **Important: Disamiguating contacts with the same name**" type="danger">
 
 Add optional parameters immediately after `n/NAME` to narrow down the match — Phone number, Email, Address, or Tag. See [User Disambiguation](#user-disambiguation) for details.
 
@@ -492,7 +492,7 @@ Format: `event delete title/TITLE start/START_DATE end/END_DATE n/NAME [p/PHONE_
 * Order of parameters does not matter.
 * The date time format for `start/` and `end/` is `YYYY-MM-DD HHmm` or `DD-MM-YYYY HHmm`.
 
-<panel header=":fa-solid-code: **Examples**" type="info" expanded>
+<panel header=":fa-solid-code: **Examples**" type="info">
 
 - `event delete title/Meeting start/2026-03-12 1100 end/2026-04-12 2359 n/David Li`<br>
   Deletes the event titled "Meeting" (12 Mar 2026 1100 – 12 Apr 2026 2359) assigned to David Li.
@@ -502,7 +502,7 @@ Format: `event delete title/TITLE start/START_DATE end/END_DATE n/NAME [p/PHONE_
 
 </panel>
 
-<panel header=":fa-solid-lightbulb: **Tip: Disambiguating contacts with the same name**" type="success">
+<panel header=":fa-solid-exclamation-triangle: **Important: Disamiguating contacts with the same name**" type="danger">
 
 Add optional parameters immediately after `n/NAME` to narrow down the match — Phone number, Email, Address, or Tag. See [User Disambiguation](#user-disambiguation) for details.
 
