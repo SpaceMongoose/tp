@@ -96,6 +96,11 @@ public interface Model {
     void showAllPersons();
 
     /**
+     * Resets the filtered person list to show all persons with pinned persons first.
+     */
+    void showAllPersonsPinnedFirst();
+
+    /**
      * Filters the person list to persons matching {@code predicate}.
      * Does not modify the event list.
      */
@@ -111,6 +116,21 @@ public interface Model {
      * Does not modify the event list.
      */
     void showPerson(Person person);
+
+    /**
+     * Pins the given person for this application session.
+     */
+    void pinPerson(Person person);
+
+    /**
+     * Unpins the given person for this application session.
+     */
+    void unpinPerson(Person person);
+
+    /**
+     * Returns true if the given person is currently pinned.
+     */
+    boolean isPersonPinned(Person person);
 
     /**
      * Return a list of correct contact(s) based on the optional parameters provided
@@ -147,12 +167,6 @@ public interface Model {
 
     /** Returns an unmodifiable view of the filtered event list */
     ObservableList<Event> getFilteredEventList();
-
-    /**
-     * Updates the filter of the filtered event list to filter by the given {@code predicate}.
-     * @throws NullPointerException if {@code predicate} is null.
-     */
-    void updateFilteredEventList(Predicate<Event> predicate);
 
     /**
      * Filters the filtered event list to show no events.

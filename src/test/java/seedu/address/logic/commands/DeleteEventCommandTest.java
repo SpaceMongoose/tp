@@ -238,7 +238,9 @@ public class DeleteEventCommandTest {
         public void showAllPersons() {
             throw new AssertionError("This method should not be called.");
         }
-
+        @Override public void showAllPersonsPinnedFirst() {
+            throw new AssertionError("This method should not be called.");
+        }
         @Override
         public void showPersons(Predicate<Person> predicate) {
             throw new AssertionError("This method should not be called.");
@@ -266,11 +268,6 @@ public class DeleteEventCommandTest {
 
         @Override
         public ObservableList<Event> getFilteredEventList() {
-            throw new AssertionError("This method should not be called.");
-        }
-
-        @Override
-        public void updateFilteredEventList(Predicate<Event> predicate) {
             throw new AssertionError("This method should not be called.");
         }
 
@@ -313,6 +310,20 @@ public class DeleteEventCommandTest {
         public boolean hasOverlappingEvent(Event event) {
             throw new AssertionError("This method should not be called.");
         }
+        @Override
+        public void pinPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void unpinPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public boolean isPersonPinned(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
     }
 
     private class ModelStubWithPerson extends ModelStub {
@@ -345,10 +356,6 @@ public class DeleteEventCommandTest {
         }
 
         @Override
-        public void updateFilteredEventList(Predicate<Event> predicate) {
-        }
-
-        @Override
         public void showEventsForPerson(Person person) {
         }
 
@@ -362,6 +369,21 @@ public class DeleteEventCommandTest {
             unlinkCalled = true;
             return this.eventToUnlink;
         }
+
+        @Override
+        public void pinPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void unpinPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public boolean isPersonPinned(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
     }
 
     private class ModelStubWithNoPerson extends ModelStub {
@@ -374,9 +396,6 @@ public class DeleteEventCommandTest {
         public void updateFilteredPersonList(Predicate<Person> predicate) {
         }
 
-        @Override
-        public void updateFilteredEventList(Predicate<Event> predicate) {
-        }
     }
 
     private class ModelStubWithMultiplePersons extends ModelStub {
@@ -404,9 +423,5 @@ public class DeleteEventCommandTest {
             filteredPersonsUpdated = true;
         }
 
-        @Override
-        public void updateFilteredEventList(Predicate<Event> predicate) {
-            filteredEventsUpdated = true;
-        }
     }
 }

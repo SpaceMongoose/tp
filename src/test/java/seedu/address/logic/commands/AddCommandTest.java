@@ -44,13 +44,13 @@ public class AddCommandTest {
         Files.createDirectory(userFolder);
 
         String originalDir = PhotoStorageUtil.getImageDirectory();
-        String tempDirPath = appFolder.toString().replace("\\", "/") + "/";
+        String tempDirPath = PhotoStorageUtil.formatPath(appFolder);
         PhotoStorageUtil.setImageDirectory(tempDirPath);
 
         try {
             Path sourceFile = userFolder.resolve("test.jpg");
             Files.createFile(sourceFile);
-            String pathToSourceFile = sourceFile.toString().replace("\\", "/");
+            String pathToSourceFile = PhotoStorageUtil.formatPath(sourceFile);
 
             Person validPersonWithPhoto = new PersonBuilder().withPhoto(pathToSourceFile).build();
             CommandResult commandResult = new AddCommand(validPersonWithPhoto).execute(modelStub);
@@ -74,12 +74,11 @@ public class AddCommandTest {
         Files.createDirectory(userFolder);
 
         String originalDir = PhotoStorageUtil.getImageDirectory();
-        String tempDirPath = appFolder.toString().replace("\\", "/") + "/";
+        String tempDirPath = PhotoStorageUtil.formatPath(appFolder);
         PhotoStorageUtil.setImageDirectory(tempDirPath);
 
         try {
-            String dummyFile = userFolder.resolve("does_not_exist.jpg").toString().replace("\\",
-                    "/");
+            String dummyFile = PhotoStorageUtil.formatPath(userFolder.resolve("does_not_exist.jpg"));
             Person personWithInvalidPhoto = new PersonBuilder().withPhoto(dummyFile).build();
             AddCommand addCommand = new AddCommand(personWithInvalidPhoto);
 
@@ -232,6 +231,11 @@ public class AddCommandTest {
         }
 
         @Override
+        public void showAllPersonsPinnedFirst() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public void showPersons(Predicate<Person> predicate) {
             throw new AssertionError("This method should not be called.");
         }
@@ -297,7 +301,17 @@ public class AddCommandTest {
         }
 
         @Override
-        public void updateFilteredEventList(Predicate<Event> predicate) {
+        public void pinPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void unpinPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public boolean isPersonPinned(Person person) {
             throw new AssertionError("This method should not be called.");
         }
     }

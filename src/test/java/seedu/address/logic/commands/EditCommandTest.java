@@ -420,13 +420,13 @@ public class EditCommandTest {
         Files.createDirectory(userFolder);
 
         String originalDir = PhotoStorageUtil.getImageDirectory();
-        String tempDirPath = appFolder.toString().replace("\\", "/") + "/";
+        String tempDirPath = PhotoStorageUtil.formatPath(appFolder);
         PhotoStorageUtil.setImageDirectory(tempDirPath);
 
         try {
             Path sourceFile = userFolder.resolve("test.jpg");
             Files.createFile(sourceFile);
-            String pathToSourceFile = sourceFile.toString().replace("\\", "/");
+            String pathToSourceFile = PhotoStorageUtil.formatPath(sourceFile);
 
             Index indexLastPerson = Index.fromOneBased(model.getFilteredPersonList().size());
             Person lastPerson = model.getFilteredPersonList().get(indexLastPerson.getZeroBased());
@@ -442,7 +442,7 @@ public class EditCommandTest {
             Person storedPerson = model.getFilteredPersonList().get(0);
             assertTrue(storedPerson.getPhoto().isPresent());
             assertNotEquals(pathToSourceFile, storedPerson.getPhoto().get().getPath());
-            assertTrue(storedPerson.getPhoto().get().isSavedLocally());
+            assertTrue(PhotoStorageUtil.isSavedLocally(storedPerson.getPhoto().get()));
             assertTrue(Files.exists(Path.of(storedPerson.getPhoto().get().getPath())));
         } finally {
             PhotoStorageUtil.setImageDirectory(originalDir);
@@ -458,12 +458,11 @@ public class EditCommandTest {
         Files.createDirectory(appFolder);
         Files.createDirectory(userFolder);
 
-        String tempDirPath = appFolder.toString().replace("\\", "/") + "/";
+        String tempDirPath = PhotoStorageUtil.formatPath(appFolder);
         PhotoStorageUtil.setImageDirectory(tempDirPath);
 
         try {
-            String missingFilePath = userFolder.resolve("does_not_exist.jpg").toString()
-                    .replace("\\", "/");
+            String missingFilePath = PhotoStorageUtil.formatPath(userFolder.resolve("does_not_exist.jpg"));
             Index indexLastPerson = Index.fromOneBased(model.getFilteredPersonList().size());
 
             EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
@@ -485,13 +484,13 @@ public class EditCommandTest {
         Path appFolder = tempDir.resolve("app_storage");
         Files.createDirectory(appFolder);
 
-        String tempDirPath = appFolder.toString().replace("\\", "/") + "/";
+        String tempDirPath = PhotoStorageUtil.formatPath(appFolder);
         PhotoStorageUtil.setImageDirectory(tempDirPath);
 
         try {
             Path existingPhoto = appFolder.resolve("i_exists.jpg");
             Files.createFile(existingPhoto);
-            String existingPhotoPath = existingPhoto.toString().replace("\\", "/");
+            String existingPhotoPath = PhotoStorageUtil.formatPath(existingPhoto);
 
             Index indexLastPerson = Index.fromOneBased(model.getFilteredPersonList().size());
             Person lastPerson = model.getFilteredPersonList().get(indexLastPerson.getZeroBased());
@@ -517,7 +516,7 @@ public class EditCommandTest {
         String originalDir = PhotoStorageUtil.getImageDirectory();
         Path appFolder = tempDir.resolve("app_storage");
         Files.createDirectory(appFolder);
-        PhotoStorageUtil.setImageDirectory(appFolder.toString().replace("\\", "/") + "/");
+        PhotoStorageUtil.setImageDirectory(PhotoStorageUtil.formatPath(appFolder));
 
         try {
             // cannot_delete.jpg/locked.txt to prevent cannot_delete.jpg from being deleted
@@ -525,7 +524,7 @@ public class EditCommandTest {
             Path undeletableOldPhoto = appFolder.resolve("cannot_delete.jpg");
             Files.createDirectory(undeletableOldPhoto);
             Files.createFile(undeletableOldPhoto.resolve("locked.txt"));
-            String oldPhotoPath = undeletableOldPhoto.toString().replace("\\", "/");
+            String oldPhotoPath = PhotoStorageUtil.formatPath(undeletableOldPhoto);
 
             // Give the person "cannot_delete.jpg"
             Index indexLastPerson = Index.fromOneBased(model.getFilteredPersonList().size());
@@ -537,7 +536,7 @@ public class EditCommandTest {
             // Create file to replace "cannot_delete.jpg" with
             Path newPhotoFile = tempDir.resolve("new_photo.jpg");
             Files.createFile(newPhotoFile);
-            String newPhotoPath = newPhotoFile.toString().replace("\\", "/");
+            String newPhotoPath = PhotoStorageUtil.formatPath(newPhotoFile);
 
             EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
                     .withPhoto(newPhotoPath).build();

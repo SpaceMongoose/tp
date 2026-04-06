@@ -45,7 +45,8 @@ public class DeleteCommandTest {
                 Messages.format(personToDelete));
 
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        expectedModel.deletePerson(personToDelete);
+        Person expectedPersonToDelete = expectedModel.findPersons(createNameOnlyInfo(personToDelete.getName())).get(0);
+        expectedModel.deletePerson(expectedPersonToDelete);
 
         assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
     }
@@ -103,7 +104,8 @@ public class DeleteCommandTest {
                 Messages.format(firstMatch));
 
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        expectedModel.deletePerson(firstMatch);
+        Person expectedPersonToDelete = expectedModel.findPersons(info).get(0);
+        expectedModel.deletePerson(expectedPersonToDelete);
 
         assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
     }
@@ -142,7 +144,9 @@ public class DeleteCommandTest {
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS,
                 Messages.format(secondMatch));
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        expectedModel.deletePerson(secondMatch);
+        Person expectedPersonToDelete = expectedModel.findPersons(info3).get(0);
+        expectedModel.deletePerson(expectedPersonToDelete);
+        expectedModel.showNoEvents();
         assertCommandSuccess(deleteCommand3, model, expectedMessage, expectedModel);
     }
 
@@ -200,13 +204,13 @@ public class DeleteCommandTest {
     public void execute_deletesPersonAndPhoto_success(@TempDir Path tempDir) throws Exception {
         // Set up the temp directories for simulation
         String originalDir = PhotoStorageUtil.getImageDirectory();
-        String tempDirPath = tempDir.toString().replace("\\", "/") + "/";
+        String tempDirPath = PhotoStorageUtil.formatPath(tempDir);
         PhotoStorageUtil.setImageDirectory(tempDirPath);
 
         try {
             Path photoFile = tempDir.resolve("delete_me.jpg");
             Files.createFile(photoFile);
-            String photoPath = photoFile.toString().replace("\\", "/");
+            String photoPath = PhotoStorageUtil.formatPath(photoFile);
 
             Person personToDelete = new PersonBuilder().withName("John Doe").withPhoto(photoPath).build();
             model.addPerson(personToDelete);
@@ -226,7 +230,7 @@ public class DeleteCommandTest {
     public void execute_deletesPersonAndPhoto_throwsCommandException(@TempDir Path tempDir) throws Exception {
         // Set up the temp directories for simulation
         String originalDir = PhotoStorageUtil.getImageDirectory();
-        String tempDirPath = tempDir.toString().replace("\\", "/") + "/";
+        String tempDirPath = PhotoStorageUtil.formatPath(tempDir);
         PhotoStorageUtil.setImageDirectory(tempDirPath);
 
         try {
@@ -236,7 +240,7 @@ public class DeleteCommandTest {
             Files.createDirectory(dummyDir);
 
             Files.createFile(dummyDir.resolve("dummy.txt"));
-            String photoPath = dummyDir.toString().replace("\\", "/");
+            String photoPath = PhotoStorageUtil.formatPath(dummyDir);
 
             Person personToDelete = new PersonBuilder().withName("John Doe").withPhoto(photoPath).build();
             model.addPerson(personToDelete);

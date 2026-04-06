@@ -3,7 +3,6 @@ package seedu.address.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static seedu.address.model.Model.PREDICATE_SHOW_ALL_EVENTS;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
@@ -121,11 +120,6 @@ public class ModelManagerTest {
     }
 
     @Test
-    public void updateFilteredEventList_nullPredicate_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> modelManager.updateFilteredEventList(null));
-    }
-
-    @Test
     public void hasEvent_nullEvent_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> modelManager.hasEvent(null));
     }
@@ -212,21 +206,6 @@ public class ModelManagerTest {
     }
 
     @Test
-    public void updateFilteredEventList_filtersByTitle() {
-        Event meeting = newEvent("Team Meeting", "Discuss milestones", "2026-03-20 0900",
-                "2026-03-20 1000");
-        Event review = newEvent("Code Review", "Quality check", "2026-03-21 1400",
-                "2026-03-21 1500");
-        modelManager.addEvent(meeting);
-        modelManager.addEvent(review);
-
-        modelManager
-                .updateFilteredEventList(event -> event.getTitle().toString().contains("Meeting"));
-        assertEquals(1, modelManager.getFilteredEventList().size());
-        assertTrue(modelManager.getFilteredEventList().contains(meeting));
-    }
-
-    @Test
     public void equals() {
         AddressBook addressBook = new AddressBookBuilder().withPerson(ALICE).withPerson(BENSON)
                 .build();
@@ -256,10 +235,6 @@ public class ModelManagerTest {
                 new NameContainsKeywordsPredicate(Arrays.asList(keywords)));
         assertFalse(modelManager.equals(new ModelManager(addressBook, userPrefs)));
 
-        // resets modelManager to initial state for upcoming tests
-        modelManager.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        modelManager.updateFilteredEventList(PREDICATE_SHOW_ALL_EVENTS);
-
         // different userPrefs -> returns false
         UserPrefs differentUserPrefs = new UserPrefs();
         differentUserPrefs.setAddressBookFilePath(Paths.get("differentFilePath"));
@@ -285,6 +260,26 @@ public class ModelManagerTest {
         modelManager.showPersons(p -> p.equals(ALICE));
         assertEquals(1, modelManager.getFilteredPersonList().size());
         assertEquals(ALICE, modelManager.getFilteredPersonList().get(0));
+    }
+
+    @Test
+    public void showAllPersonsPinnedFirst_ordersPinnedPersonsBeforeUnpinnedPersons() {
+        Person first = new PersonBuilder().withName("Alpha One").withPhone("90000001").build();
+        Person second = new PersonBuilder().withName("Beta Two").withPhone("90000002").build();
+        Person third = new PersonBuilder().withName("Gamma Three").withPhone("90000003").build();
+
+        modelManager.addPerson(first);
+        modelManager.addPerson(second);
+        modelManager.addPerson(third);
+
+        modelManager.pinPerson(second);
+        modelManager.pinPerson(first);
+
+        modelManager.showAllPersonsPinnedFirst();
+
+        assertEquals(second, modelManager.getFilteredPersonList().get(0));
+        assertEquals(first, modelManager.getFilteredPersonList().get(1));
+        assertEquals(third, modelManager.getFilteredPersonList().get(2));
     }
 
     @Test
