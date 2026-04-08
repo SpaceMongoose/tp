@@ -288,26 +288,41 @@ public class ModelManager implements Model {
                 .toList();
     }
 
+    @Override
+    public List<Person> searchPersons(PersonInformation info) {
+        String[] keywords = info.name.fullName.trim().split("\\s+");
+        return addressBook
+                .getPersonList()
+                .stream()
+                .filter(person -> matchesKeywords(person, keywords) && matchesOptionalFields(person, info))
+                .toList();
+    }
+
+    private static boolean matchesKeywords(Person p, String[] keywords) {
+        List<String> personWords = List.of(p.getName().fullName.toLowerCase().split("\\s+"));
+        for (String keyword : keywords) {
+            if (personWords.contains(keyword.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean matchesOptionalFields(Person p, PersonInformation info) {
+        boolean isPhoneMatching = info.phone.map(ph -> ph.equals(p.getPhone())).orElse(true);
+        boolean isEmailMatching = info.email.map(em -> p.getEmail().map(em::equals).orElse(false)).orElse(true);
+        boolean isAddressMatching = info.address.map(ad -> p.getAddress().map(ad::equals).orElse(false)).orElse(true);
+        boolean isTagsMatching = info.tags.isEmpty() || p.getTags().containsAll(info.tags);
+        return isPhoneMatching && isEmailMatching && isAddressMatching && isTagsMatching;
+    }
+
     private static boolean matchesInformation(Person p, PersonInformation info) {
-        if (!p.getName().equalsIgnoreCase(info.name)) {
-            return false;
-        }
-        // checking phone number:
-        if (!info.phone.map(ph -> ph.equals(p.getPhone())).orElse(true)) {
-            return false;
-        }
-        if (!info.email.map(em -> p.getEmail().map(e -> em.equals(e)).orElse(false))
-                .orElse(true)) {
-            return false;
-        }
-        if (!info.address.map(ad -> p.getAddress().map(a -> ad.equals(a)).orElse(false))
-                .orElse(true)) {
-            return false;
-        }
-        if (!info.tags.isEmpty() && !p.getTags().containsAll(info.tags)) {
-            return false;
-        }
-        return true;
+        boolean isNameMatching = p.getName().equalsIgnoreCase(info.name);
+        boolean isPhoneMatching = info.phone.map(ph -> ph.equals(p.getPhone())).orElse(true);
+        boolean isEmailMatching = info.email.map(em -> p.getEmail().map(em::equals).orElse(false)).orElse(true);
+        boolean isAddressMatching = info.address.map(ad -> p.getAddress().map(ad::equals).orElse(false)).orElse(true);
+        boolean isTagsMatching = info.tags.isEmpty() || p.getTags().containsAll(info.tags);
+        return isNameMatching && isPhoneMatching && isEmailMatching && isAddressMatching && isTagsMatching;
     }
 
     /**

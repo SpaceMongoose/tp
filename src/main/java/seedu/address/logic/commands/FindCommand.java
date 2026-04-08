@@ -55,7 +55,7 @@ public class FindCommand extends Command {
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        List<Person> matches = model.findPersons(targetInfo);
+        List<Person> matches = model.searchPersons(targetInfo);
         Set<Person> matchingPersons = Set.copyOf(matches);
         int count = matches.size();
 

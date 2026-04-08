@@ -265,6 +265,11 @@ public class AddCommandTest {
             throw new AssertionError("This method should not be called.");
         }
 
+        @Override
+        public List<Person> searchPersons(PersonInformation info) {
+            throw new AssertionError("This method should not be called.");
+        }
+
         public boolean hasEvent(Event event) {
             throw new AssertionError("This method should not be called.");
         }

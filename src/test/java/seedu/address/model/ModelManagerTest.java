@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
+import static seedu.address.testutil.TypicalPersons.ELLE;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -395,6 +396,103 @@ public class ModelManagerTest {
 
         List<Person> matches = modelManager.findPersons(info);
         assertEquals(0, matches.size());
+    }
+
+    @Test
+    public void searchPersons_singleKeyword_returnsMatchingPersons() {
+        modelManager.addPerson(ALICE);
+        modelManager.addPerson(ELLE);
+        modelManager.addPerson(BENSON);
+
+        PersonInformation info = new PersonInformation(new Name("alice"), null, null, null, Set.of());
+
+        List<Person> matches = modelManager.searchPersons(info);
+        assertEquals(1, matches.size());
+        assertEquals(ALICE, matches.get(0));
+    }
+
+    @Test
+    public void searchPersons_multipleKeywords_returnsMatchingPersons() {
+        modelManager.addPerson(ALICE);
+        modelManager.addPerson(ELLE);
+        modelManager.addPerson(BENSON);
+
+        PersonInformation info = new PersonInformation(new Name("alice meyer"), null, null, null, Set.of());
+
+        List<Person> matches = modelManager.searchPersons(info);
+        assertEquals(2, matches.size());
+        assertTrue(matches.contains(ALICE));
+        assertTrue(matches.contains(ELLE));
+    }
+
+    @Test
+    public void searchPersons_optionalPhoneNarrowsKeywordMatches_returnsSingleMatch() {
+        Person firstMatch = new PersonBuilder().withName("Alex Tan").withPhone("90001111").build();
+        Person secondMatch = new PersonBuilder().withName("Alex Lim").withPhone("90002222").build();
+
+        modelManager.addPerson(firstMatch);
+        modelManager.addPerson(secondMatch);
+
+        PersonInformation info = new PersonInformation(new Name("Alex"),
+                new Phone("90002222"), null, null, Set.of());
+
+        List<Person> matches = modelManager.searchPersons(info);
+        assertEquals(1, matches.size());
+        assertEquals(secondMatch, matches.get(0));
+    }
+
+    @Test
+    public void searchPersons_optionalEmailNarrowsKeywordMatches_returnsSingleMatch() {
+        Person firstMatch = new PersonBuilder().withName("Alex Tan").withPhone("90001111")
+                .withoutEmail().build();
+        Person secondMatch = new PersonBuilder().withName("Alex Lim").withPhone("90002222")
+                .withEmail("alex@example.com").build();
+
+        modelManager.addPerson(firstMatch);
+        modelManager.addPerson(secondMatch);
+
+        PersonInformation info = new PersonInformation(new Name("Alex"),
+                null, new Email("alex@example.com"), null, Set.of());
+
+        List<Person> matches = modelManager.searchPersons(info);
+        assertEquals(1, matches.size());
+        assertEquals(secondMatch, matches.get(0));
+    }
+
+    @Test
+    public void searchPersons_optionalAddressNarrowsKeywordMatches_returnsSingleMatch() {
+        Person firstMatch = new PersonBuilder().withName("Taylor One").withPhone("90110011")
+                .withoutAddress().build();
+        Person secondMatch = new PersonBuilder().withName("Taylor Two").withPhone("90110022")
+                .withAddress("123, Clementi Ave 3").build();
+
+        modelManager.addPerson(firstMatch);
+        modelManager.addPerson(secondMatch);
+
+        PersonInformation info = new PersonInformation(new Name("Taylor"),
+                null, null, new seedu.address.model.person.Address("123, Clementi Ave 3"), Set.of());
+
+        List<Person> matches = modelManager.searchPersons(info);
+        assertEquals(1, matches.size());
+        assertEquals(secondMatch, matches.get(0));
+    }
+
+    @Test
+    public void searchPersons_optionalTagsRequireAllTags_returnsMatchingPersons() {
+        Person tagged = new PersonBuilder().withName("Tagged Person").withPhone("98887766")
+                .withTags("friends", "colleagues").build();
+        Person partial = new PersonBuilder().withName("Tagged Other").withPhone("98887767")
+                .withTags("friends").build();
+
+        modelManager.addPerson(tagged);
+        modelManager.addPerson(partial);
+
+        PersonInformation info = new PersonInformation(new Name("Tagged"), null, null, null,
+                Set.of(new Tag("friends"), new Tag("colleagues")));
+
+        List<Person> matches = modelManager.searchPersons(info);
+        assertEquals(1, matches.size());
+        assertEquals(tagged, matches.get(0));
     }
 
     @Test

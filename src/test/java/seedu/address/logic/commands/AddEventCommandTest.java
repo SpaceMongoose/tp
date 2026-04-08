@@ -301,6 +301,11 @@ public class AddEventCommandTest {
         }
 
         @Override
+        public List<Person> searchPersons(PersonInformation info) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public boolean hasEvent(Event event) {
             throw new AssertionError("This method should not be called.");
         }
