@@ -23,7 +23,7 @@ public class AddEventCommand extends Command {
     public static final String MESSAGE_CLASHING_EVENT = "This event clashes with an existing event in the calendar.";
     public static final String MESSAGE_USAGE = "event " + COMMAND_WORD
             + ": Adds an event and tags it to a contact.\n"
-            + "Parameters: event add title/TITLE [desc/DESCRIPTION] start/START end/END to/NAME "
+            + "Parameters: event add title/TITLE [desc/DESCRIPTION] start/START end/END n/NAME "
             + "[p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...\n"
             + "Example: event add title/CS2109S Meeting desc/Final discussion on problem set 1 "
             + "start/2026-03-25 0900 end/2026-03-25 1000 to/David Li";

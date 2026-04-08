@@ -78,6 +78,8 @@ The **API** of this component is specified in [`Ui.java`](https://github.com/se-
 
 The UI consists of a `MainWindow` that is made up of parts e.g.`CommandBox`, `ResultDisplay`, `PersonListPanel`, `StatusBarFooter` etc. All these, including the `MainWindow`, inherit from the abstract `UiPart` class which captures the commonalities between classes that represent parts of the visible GUI.
 
+Additionally, the `CommandBox` component will contain a `CommandHistory` component that is used to support the command history feature.
+
 The `UI` component uses the JavaFx UI framework. The layout of these UI parts are defined in matching `.fxml` files that are in the `src/main/resources/view` folder. For example, the layout of the [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java) is specified in [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml)
 
 The `UI` component,
@@ -264,6 +266,78 @@ _{more aspects and alternatives to be added}_
 
 _{Explain here how the data archiving feature will be implemented}_
 
+### \[Proposed\] Retrieval of past entered commands
+#### Implementation
+The command retrieval mechanism is implemented as a UI-level feature split between `CommandBox` and `CommandHistory`.
+
+`CommandBox` owns a single `CommandHistory` instance for the application's UI session. This instance is responsible for
+storing previously entered command strings and handling navigation state (e.g., current history pointer and the user's
+latest in-progress input).
+
+This design keeps parser and command execution logic unchanged, since retrieval is triggered by key events in the command input box rather than by a typed command word.
+
+History is non-persistent by design. Command history exists only in memory for the current application run, and is cleared when the application closes.
+
+#### Usage scenario
+The interaction flow is as follows:
+
+* User enters a command and presses `Enter`.
+  1. `CommandBox` records the command into `CommandHistory`.
+      * `CommandHistory` stores all previously entered commands in a list
+  2. `CommandBox` executes the command through the existing Logic pipeline.
+
+<puml src="diagrams/CommandHistoryEnterSequenceDiagram.puml" width="250"/>
+
+* When user presses `Up`, `CommandBox` requests an older command from `CommandHistory` and updates the text field.
+* When user presses `Down`, `CommandBox` requests a newer command (or restored in-progress input) from
+  `CommandHistory` and updates the text field.
+
+<div>
+  <puml src="diagrams/CommandHistoryUpSequenceDiagram.puml" width="250"/>
+  <puml src="diagrams/CommandHistoryDownSequenceDiagram.puml" width="250"/>
+</div>
+
+* Before navigating away, any currently input command by the user is saved as the latest command
+* When user manually edits a previous command, `CommandBox` syncs the current text to
+  `CommandHistory` as the in-progress input.
+
+
+#### Design Considerations
+**Aspect: Behavior of retrieval and navigation**
+* **Alternative 1 (current choice):** Preserve the in-progress input while navigating history.
+
+  Behavior: If the user has partially typed a command, navigates to older commands using Up, and then returns using Down,
+  the original partially typed command is restored.
+
+  * Pros: Intuitive for users who use Up/Down to inspect previous commands without wanting to lose current work.
+  * Pros: Reduces accidental loss of in-progress input.
+  * Cons: Requires storing one extra temporary input state (the current in-progress command).
+* **Alternative 2:** Replace the current input with history entries and do not restore the original partial input.
+
+  Behavior: If the user has partially typed a command and navigates history, editing a recalled command will replace the
+  current line; the original partial command is not restored automatically.
+
+  * Pros: Simpler state management and implementation.
+  * Pros: Editing recalled history entries is straightforward.
+  * Cons: Higher risk of losing in-progress input when browsing history.
+  * Cons: Less forgiving for users who use history only for quick reference.
+
+**Aspect: Usage**
+* **Alternative 1 (current choice):** Treat command history as a UI enhancement in `CommandBox`.
+
+  * Pros: Aligns with event-driven Up/Down key handling in the UI layer.
+  * Pros: Keeps parser and command execution flow unchanged.
+  * Pros: Low implementation complexity and low regression risk.
+  * Cons: History is not directly accessible as a typed command (e.g. `history`).
+* **Alternative 2:** Implement history as an explicit command in Logic (e.g. `history`, `history 10`).
+
+  * Pros: Can present command history as structured output and potentially support filtering/limits.
+  * Pros: Easier to expose to non-UI clients in future.
+  * Cons: Adds parser/command/model changes for a feature primarily triggered by keyboard navigation.
+  * Cons: Does not by itself provide the same quick Up/Down editing workflow.
+
+Given current goals, Alternative 1 is preferred because the feature focuses on fast command-line input recall rather than
+command-output reporting.
 ### Pin/Unpin contact feature
 
 #### Implementation
@@ -352,7 +426,7 @@ The following sequence diagram illustrates the functional path taken when a user
 
 **Note:** Due to a PlantUML rendering limitation, the `:XYZCommand` lifeline is shown to prematurely end at the 1st alt path. The unified destroy marker (X) at the bottom represents the termination of the command's lifecycle for all three alternative paths.
 
-</box>                  
+</box>                
 
 The following activity diagram summarizes the command's match-resolution flow:
 
@@ -370,7 +444,7 @@ The following activity diagram summarizes the command's match-resolution flow:
 * **Alternative 2:** Pass individual fields directly as arguments to the utility and model methods.
     * Pros: Does not require creating and maintaining a new class.
     * Cons: Creates method signatures with "Long Parameter List" code smell.
-    * Cons: Tight coupling. Any changes to the search criteria (e.g., adding new search criteria, removing search criteria) will require modification to all the method signatures. 
+    * Cons: Tight coupling. Any changes to the search criteria (e.g., adding new search criteria,removing search criteria) will require modification to all the method signatures. 
 
 --------------------------------------------------------------------------------------------------------------------
 

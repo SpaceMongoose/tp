@@ -6,11 +6,11 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_DESC;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_END;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_START;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TITLE;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_TO;
 
 import java.util.Optional;
 import java.util.Set;
@@ -43,17 +43,17 @@ public class AddEventParser implements Parser<AddEventCommand> {
         requireNonNull(args);
 
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args,
-                PREFIX_TITLE, PREFIX_DESC, PREFIX_START, PREFIX_END, PREFIX_TO,
+                PREFIX_TITLE, PREFIX_DESC, PREFIX_START, PREFIX_END, PREFIX_NAME,
                 PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS, PREFIX_TAG);
 
-        if (!arePrefixesPresent(argMultimap, PREFIX_TITLE, PREFIX_START, PREFIX_END, PREFIX_TO)
+        if (!arePrefixesPresent(argMultimap, PREFIX_TITLE, PREFIX_START, PREFIX_END, PREFIX_NAME)
                 || !argMultimap.getPreamble().isEmpty()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
         }
 
         argMultimap.verifyNoDuplicatePrefixesFor(
-                PREFIX_TITLE, PREFIX_DESC, PREFIX_START, PREFIX_END, PREFIX_TO,
-                PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS);
+                PREFIX_TITLE, PREFIX_DESC, PREFIX_START, PREFIX_END,
+                PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS);
 
         Event event = createEvent(argMultimap);
         try {
@@ -66,7 +66,7 @@ public class AddEventParser implements Parser<AddEventCommand> {
     }
 
     private static PersonInformation createPersonInformation(ArgumentMultimap argMultimap) throws ParseException {
-        String taggedContact = argMultimap.getValue(PREFIX_TO).get().trim();
+        String taggedContact = argMultimap.getValue(PREFIX_NAME).get().trim();
         Name name = ParserUtil.parseName(taggedContact);
         Phone phone = argMultimap.getValue(PREFIX_PHONE).isPresent()
                 ? ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE).get())

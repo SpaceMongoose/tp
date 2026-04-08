@@ -60,7 +60,7 @@ public class AddressBookParserTest {
 
         AddEventCommand command = (AddEventCommand) parser.parseCommand(
                 "event add title/Complete feature list desc/All tasks start/2026-02-21 1100 "
-                        + "end/2026-02-21 1500 to/Lee eejoong");
+                        + "end/2026-02-21 1500 n/Lee eejoong");
 
         assertEquals(expectedCommand, command);
     }

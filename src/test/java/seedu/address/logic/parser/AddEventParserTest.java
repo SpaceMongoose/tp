@@ -37,8 +37,8 @@ public class AddEventParserTest {
         AddEventCommand expectedCommand = new AddEventCommand(expectedInfo, expectedEvent);
 
         assertParseSuccess(parser,
-                " title/Complete feature list desc/All tasks start/" + VALID_START + " end/" + VALID_END
-                        + " to/" + VALID_NAME,
+                " title/Complete feature list desc/All tasks start/" + VALID_START
+                        + " end/" + VALID_END + " n/" + VALID_NAME,
                 expectedCommand);
     }
 
@@ -52,7 +52,7 @@ public class AddEventParserTest {
 
         assertParseSuccess(parser,
                 " title/Complete feature list desc/All tasks start/" + VALID_START + " end/" + VALID_END
-                        + " to/" + VALID_NAME + " p/91234567",
+                        + " n/" + VALID_NAME + " p/91234567",
                 expectedCommand);
     }
 
@@ -66,7 +66,7 @@ public class AddEventParserTest {
 
         assertParseSuccess(parser,
                 " title/Complete feature list desc/All tasks start/" + VALID_START + " end/" + VALID_END
-                        + " to/" + VALID_NAME + " a/Blk 123 Clementi Ave",
+                        + " n/" + VALID_NAME + " a/Blk 123 Clementi Ave",
                 expectedCommand);
     }
 
@@ -80,7 +80,7 @@ public class AddEventParserTest {
 
         assertParseSuccess(parser,
                 " title/Complete feature list desc/All tasks start/" + VALID_START + " end/" + VALID_END
-                        + " to/" + VALID_NAME + " e/amy@example.com",
+                        + " n/" + VALID_NAME + " e/amy@example.com",
                 expectedCommand);
     }
 
@@ -93,7 +93,7 @@ public class AddEventParserTest {
 
         assertParseSuccess(parser,
                 " title/Complete feature list start/" + VALID_START + " end/" + VALID_END
-                        + " to/" + VALID_NAME,
+                        + " n/" + VALID_NAME,
                 expectedCommand);
     }
 
@@ -101,7 +101,7 @@ public class AddEventParserTest {
     public void parse_invalidPhone_failure() {
         assertParseFailure(parser,
                 " title/Complete feature list desc/All tasks start/" + VALID_START + " end/" + VALID_END
-                        + " to/" + VALID_NAME + " p/notaphone",
+                        + " n/" + VALID_NAME + " p/notaphone",
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
     }
 
@@ -109,7 +109,7 @@ public class AddEventParserTest {
     public void parse_invalidEmail_failure() {
         assertParseFailure(parser,
                 " title/Complete feature list desc/All tasks start/" + VALID_START + " end/" + VALID_END
-                        + " to/" + VALID_NAME + " e/not-an-email",
+                        + " n/" + VALID_NAME + " e/not-an-email",
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
     }
 
@@ -117,7 +117,7 @@ public class AddEventParserTest {
     public void parse_preamblePresent_failure() {
         assertParseFailure(parser,
                 " unexpected title/Complete feature list desc/All tasks start/" + VALID_START
-                        + " end/" + VALID_END + " to/" + VALID_NAME,
+                        + " end/" + VALID_END + " n/" + VALID_NAME,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddEventCommand.MESSAGE_USAGE));
     }
 
@@ -138,7 +138,7 @@ public class AddEventParserTest {
     public void parse_invalidDateTimeFormat_failure() {
         // Wrong date format: day/month/year instead of year-month-day
         assertParseFailure(parser,
-                " title/Meeting start/25-03-2026 0900 end/25-03-2026 1000 to/" + VALID_NAME,
+                " title/Meeting start/25-03-2026 0900 end/25-03-2026 1000 n/" + VALID_NAME,
                 MESSAGE_INVALID_DATETIME_FORMAT);
     }
 
@@ -146,7 +146,7 @@ public class AddEventParserTest {
     public void parse_endNotAfterStart_failure() {
         // Same start and end time
         assertParseFailure(parser,
-                " title/Meeting start/" + VALID_START + " end/" + VALID_START + " to/" + VALID_NAME,
+                " title/Meeting start/" + VALID_START + " end/" + VALID_START + " n/" + VALID_NAME,
                 MESSAGE_END_NOT_AFTER_START);
     }
 
@@ -154,7 +154,7 @@ public class AddEventParserTest {
     public void parse_endBeforeStart_failure() {
         // End is before start
         assertParseFailure(parser,
-                " title/Meeting start/" + VALID_END + " end/" + VALID_START + " to/" + VALID_NAME,
+                " title/Meeting start/" + VALID_END + " end/" + VALID_START + " n/" + VALID_NAME,
                 MESSAGE_END_NOT_AFTER_START);
     }
 
@@ -163,7 +163,7 @@ public class AddEventParserTest {
         // Title contains '/' which violates Title constraints
         assertParseFailure(parser,
                 " title/Meeting/Extra desc/All tasks start/" + VALID_START + " end/" + VALID_END
-                        + " to/" + VALID_NAME,
+                        + " n/" + VALID_NAME,
                 Title.MESSAGE_CONSTRAINTS);
     }
 
@@ -172,14 +172,14 @@ public class AddEventParserTest {
         // Description contains '/' which violates Description constraints
         assertParseFailure(parser,
                 " title/Meeting desc/invalid/desc start/" + VALID_START + " end/" + VALID_END
-                        + " to/" + VALID_NAME,
+                        + " n/" + VALID_NAME,
                 Description.MESSAGE_CONSTRAINTS);
     }
 
     @Test
     public void parse_nonExistentDate_failure() {
         assertParseFailure(parser,
-                " title/Meeting start/2026-02-30 0900 end/2026-02-30 1000 to/" + VALID_NAME,
+                " title/Meeting start/2026-02-30 0900 end/2026-02-30 1000 n/" + VALID_NAME,
                 MESSAGE_INVALID_DATETIME_FORMAT);
     }
 
@@ -187,7 +187,7 @@ public class AddEventParserTest {
     public void parse_invalidEndDateTimeFormat_failure() {
         // Start is valid; only end is invalid — exercises second operand of the || condition
         assertParseFailure(parser,
-                " title/Meeting start/" + VALID_START + " end/25-03-2026 1000 to/" + VALID_NAME,
+                " title/Meeting start/" + VALID_START + " end/25-03-2026 1000 n/" + VALID_NAME,
                 MESSAGE_INVALID_DATETIME_FORMAT);
     }
 
@@ -199,7 +199,7 @@ public class AddEventParserTest {
         AddEventCommand expectedCommand = new AddEventCommand(expectedInfo, expectedEvent);
 
         assertParseSuccess(parser,
-                " title/Meeting desc/   start/" + VALID_START + " end/" + VALID_END + " to/" + VALID_NAME,
+                " title/Meeting desc/   start/" + VALID_START + " end/" + VALID_END + " n/" + VALID_NAME,
                 expectedCommand);
     }
 }
