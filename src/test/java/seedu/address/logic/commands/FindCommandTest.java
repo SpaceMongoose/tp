@@ -63,7 +63,7 @@ public class FindCommandTest {
         PersonInformation info = new PersonInformation(new Name("Nobody Here"), null, null, null, null);
         FindCommand command = new FindCommand(info);
         expectedModel.updateFilteredPersonList(p -> false);
-        expectedModel.updateFilteredEventList(event -> false);
+        expectedModel.showNoEvents();
 
         assertCommandSuccess(command, model, MESSAGE_NO_PERSONS, expectedModel);
         assertTrue(model.getFilteredPersonList().isEmpty());
@@ -81,12 +81,50 @@ public class FindCommandTest {
 
         PersonInformation info = new PersonInformation(new Name("Elle Meyer"), null, null, null, null);
         FindCommand command = new FindCommand(info);
-        expectedModel.updateFilteredPersonList(p -> p.equals(target));
-        expectedModel.updateFilteredEventList(event -> target.getEvents().contains(event));
+        expectedModel.showEventsForPerson(target);
 
         assertCommandSuccess(command, model, MESSAGE_ONE_PERSON_LISTED_OVERVIEW, expectedModel);
         assertEquals(1, model.getFilteredPersonList().size());
         assertEquals(target, model.getFilteredPersonList().get(0));
+    }
+
+    @Test
+    public void execute_singleKeywordMatch_onePersonFound() {
+        Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+
+        Person target = model.getAddressBook().getPersonList().stream()
+                .filter(p -> p.getName().equals(new Name("Elle Meyer")))
+                .findFirst()
+                .orElseThrow();
+
+        PersonInformation info = new PersonInformation(new Name("elle"), null, null, null, null);
+        FindCommand command = new FindCommand(info);
+        expectedModel.showEventsForPerson(target);
+
+        assertCommandSuccess(command, model, MESSAGE_ONE_PERSON_LISTED_OVERVIEW, expectedModel);
+        assertEquals(1, model.getFilteredPersonList().size());
+        assertEquals(target, model.getFilteredPersonList().get(0));
+    }
+
+    @Test
+    public void execute_multipleKeywords_multiplePersonsFound() {
+        Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        Person firstMatch = new PersonBuilder().withName("Alex Tan").withPhone("90001111").build();
+        Person secondMatch = new PersonBuilder().withName("Beth Lee").withPhone("90002222").build();
+        model.addPerson(firstMatch);
+        model.addPerson(secondMatch);
+
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.showMatchingPersons(java.util.Set.of(firstMatch, secondMatch));
+
+        FindCommand command = new FindCommand(new PersonInformation(new Name("Alex Beth"), null, null, null, null));
+        String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 2);
+
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+        assertEquals(2, model.getFilteredPersonList().size());
+        assertTrue(model.getFilteredPersonList().contains(firstMatch));
+        assertTrue(model.getFilteredPersonList().contains(secondMatch));
     }
 
     @Test
@@ -98,8 +136,7 @@ public class FindCommandTest {
         model.addPerson(secondMatch);
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        expectedModel.updateFilteredPersonList(p -> p.equals(firstMatch) || p.equals(secondMatch));
-        expectedModel.updateFilteredEventList(event -> false);
+        expectedModel.showMatchingPersons(java.util.Set.of(firstMatch, secondMatch));
 
         FindCommand command = new FindCommand(new PersonInformation(new Name("Alex Tan"), null, null, null, null));
         String expectedMessage = String.format(MESSAGE_PERSONS_LISTED_OVERVIEW, 2);
@@ -117,12 +154,10 @@ public class FindCommandTest {
         model.addPerson(secondMatch);
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        expectedModel.updateFilteredPersonList(p -> p.equals(secondMatch));
-
         PersonInformation info = new PersonInformation(new Name("Alex Tan"), new Phone("90002222"),
                 null, null, null);
         FindCommand command = new FindCommand(info);
-        expectedModel.updateFilteredEventList(event -> secondMatch.getEvents().contains(event));
+        expectedModel.showEventsForPerson(secondMatch);
 
         assertCommandSuccess(command, model, MESSAGE_ONE_PERSON_LISTED_OVERVIEW, expectedModel);
         assertEquals(1, model.getFilteredPersonList().size());

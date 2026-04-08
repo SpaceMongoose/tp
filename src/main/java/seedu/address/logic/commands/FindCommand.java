@@ -30,7 +30,7 @@ public class FindCommand extends Command {
             + ": Finds contacts by name, with optional refinements.\n"
             + "Parameters: "
             + PREFIX_NAME + "NAME "
-            + "[" + PREFIX_PHONE + "PHONE] "
+            + "[" + PREFIX_PHONE + "PHONE_NUMBER] "
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
             + "[" + PREFIX_TAG + "TAG]...\n"
@@ -55,7 +55,7 @@ public class FindCommand extends Command {
     public CommandResult execute(Model model) {
         requireNonNull(model);
 
-        List<Person> matches = model.findPersons(targetInfo);
+        List<Person> matches = model.searchPersons(targetInfo);
         Set<Person> matchingPersons = Set.copyOf(matches);
         int count = matches.size();
 

@@ -22,7 +22,7 @@ public class DeleteEventCommand extends Command {
     public static final String MESSAGE_USAGE = "event " + COMMAND_WORD
             + ": Deletes an event linked to a contact.\n"
             + "Parameters: event delete title/TITLE start/START end/END n/NAME "
-            + "[p/PHONE] [e/EMAIL] [a/ADDRESS]...\n"
+            + "[p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...\n"
             + "Example: event delete title/Meeting start/2026-03-25 0900 end/2026-03-25 1000 n/David Li";
 
     public static final String MESSAGE_SUCCESS = "Deleted event for %1$s: %2$s";
@@ -65,7 +65,7 @@ public class DeleteEventCommand extends Command {
         logger.info("DeleteEvent: person updated " + personToEdit.getName()
                 + ", total events=" + editedPerson.getEvents().size());
 
-        model.showEventsForPerson(personToEdit);
+        model.showEventsForPerson(editedPerson);
         return new CommandResult(String.format(MESSAGE_SUCCESS, personToEdit.getName(), toDelete));
     }
 

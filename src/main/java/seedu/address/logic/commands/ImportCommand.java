@@ -25,6 +25,7 @@ import seedu.address.commons.util.CsvUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
+import seedu.address.model.ModelManager;
 import seedu.address.model.event.Description;
 import seedu.address.model.event.Event;
 import seedu.address.model.event.TimeRange;
@@ -49,7 +50,7 @@ public class ImportCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Imports a list of contacts from a CSV formatted file.\n"
             + "Parameters: "
-            + PREFIX_TYPE + "IMPORT TYPE "
+            + PREFIX_TYPE + "IMPORT_TYPE "
             + PREFIX_FILENAME + "FILENAME\n"
             + "Example: " + COMMAND_WORD + " "
             + PREFIX_TYPE + "add "
@@ -100,14 +101,21 @@ public class ImportCommand extends Command {
             return new CommandResult(String.format(MESSAGE_EMPTY_FILE, filename + FILENAME_SUFFIX));
         }
 
+        AddressBook tempAddressBook;
+        Model tempModel = new ModelManager();
         if (importType.equalsIgnoreCase("overwrite")) {
-            model.setAddressBook(new AddressBook());
+            tempAddressBook = new AddressBook();
+        } else {
+            tempAddressBook = new AddressBook(model.getAddressBook());
         }
+        tempModel.setAddressBook(tempAddressBook);
 
-        int addedRows = processImportedLinesFromCsv(model, allLines);
+        int addedRows = processImportedLinesFromCsv(tempModel, allLines);
         int totalRows = allLines.size() - 1;
         int skippedRows = totalRows - addedRows;
 
+        // Reaches here if successful, copies over what was performed to the current model
+        model.setAddressBook(tempModel.getAddressBook());
         return new CommandResult(String.format(MESSAGE_SUCCESS_ROWS_ADDED_SKIPPED,
                 filename + FILENAME_SUFFIX,
                 addedRows,
@@ -144,9 +152,9 @@ public class ImportCommand extends Command {
     }
 
     /**
-     * Iterates through the data rows of the CSV, parses each into a {@code Person},
-     * and adds them to the {@code Model} if they do not already exist.
-     * @param model The {@code Model} to be updated with new contacts.
+     * Parses all data rows of the CSV into {@code Person} objects, registers their
+     * events with the global model, then adds each person if they do not already exist.
+     * @param model The {@code Model} to be updated with new contacts and events.
      * @param lines The list of all lines (including header) from the CSV.
      * @return The count of successfully added rows.
      * @throws CommandException If an error is encountered while parsing or adding a {@code Person}.
@@ -155,17 +163,33 @@ public class ImportCommand extends Command {
         int added = 0;
         Map<Integer, Event> eventMap = new HashMap<>();
 
+        // Pass 1: parse all rows. Events are collected into eventMap.
+        List<Person> parsedPersons = new ArrayList<>();
         for (int i = 1; i < lines.size(); i++) {
             Optional<Person> person = parseLineToPerson(lines.get(i), eventMap);
+            person.ifPresent(parsedPersons::add);
+        }
 
-            if (person.isPresent() && !model.hasPerson(person.get())) {
-                model.addPerson(person.get());
+        // Pass 2: register every unique parsed event with the global model.
+        for (Event event : eventMap.values()) {
+            if (!model.hasEvent(event) && !model.hasOverlappingEvent(event)) {
+                model.addEvent(event);
+            }
+        }
+
+        // Pass 3: add persons. Their internal event lists already reference the
+        // same objects registered globally in pass 2.
+        for (Person person : parsedPersons) {
+            if (!model.hasPerson(person)) {
+                model.addPerson(person);
                 added++;
             }
         }
 
         return added;
     }
+
+
 
     /**
      * Attempts to parse a CSV line into a {@code Person} object.

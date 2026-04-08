@@ -24,7 +24,7 @@ public class AddEventCommand extends Command {
     public static final String MESSAGE_USAGE = "event " + COMMAND_WORD
             + ": Adds an event and tags it to a contact.\n"
             + "Parameters: event add title/TITLE [desc/DESCRIPTION] start/START end/END to/NAME "
-            + "[p/PHONE] [e/EMAIL] [a/ADDRESS]...\n"
+            + "[p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...\n"
             + "Example: event add title/CS2109S Meeting desc/Final discussion on problem set 1 "
             + "start/2026-03-25 0900 end/2026-03-25 1000 to/David Li";
 
@@ -78,7 +78,7 @@ public class AddEventCommand extends Command {
         logger.info("AddEvent: person updated " + personToEdit.getName()
                 + ", total events=" + editedPerson.getEvents().size());
 
-        model.showEventsForPerson(personToEdit);
+        model.showEventsForPerson(editedPerson);
         return new CommandResult(String.format(MESSAGE_SUCCESS, personToEdit.getName(), toAdd));
     }
 

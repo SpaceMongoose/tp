@@ -6,6 +6,7 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -18,6 +19,7 @@ import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.event.Event;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonInformation;
+import seedu.address.model.person.Photo;
 
 /**
  * Represents the in-memory model of the address book data.
@@ -45,6 +47,8 @@ public class ModelManager implements Model {
         sortedPersons = new SortedList<>(filteredPersons);
         sortedPersons.setComparator(createPinnedComparator());
         filteredEvents = new FilteredList<>(this.addressBook.getEventList());
+
+        showNoEvents();
     }
 
     public ModelManager() {
@@ -205,6 +209,13 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public void showPerson(Person person) {
+        requireNonNull(person);
+        updateFilteredPersonList(p -> p.equals(person));
+        sortedPersons.setComparator(null);
+    }
+
+    @Override
     public void pinPerson(Person person) {
         requireNonNull(person);
         addressBook.pinPerson(person);
@@ -243,16 +254,20 @@ public class ModelManager implements Model {
         return filteredEvents;
     }
 
-    @Override
-    public void updateFilteredEventList(Predicate<Event> predicate) {
+    private void updateFilteredEventList(Predicate<Event> predicate) {
         requireNonNull(predicate);
         filteredEvents.setPredicate(predicate);
     }
 
     @Override
+    public void showNoEvents() {
+        updateFilteredEventList(e -> false);
+    }
+
+    @Override
     public void showEventsForPerson(Person person) {
         requireNonNull(person);
-        updateFilteredPersonList(p -> p.equals(person));
+        updateFilteredPersonList(p -> p.isSamePerson(person));
         sortedPersons.setComparator(null);
         updateFilteredEventList(person::hasEvent);
     }
@@ -273,26 +288,41 @@ public class ModelManager implements Model {
                 .toList();
     }
 
+    @Override
+    public List<Person> searchPersons(PersonInformation info) {
+        String[] keywords = info.name.fullName.trim().split("\\s+");
+        return addressBook
+                .getPersonList()
+                .stream()
+                .filter(person -> matchesKeywords(person, keywords) && matchesOptionalFields(person, info))
+                .toList();
+    }
+
+    private static boolean matchesKeywords(Person p, String[] keywords) {
+        List<String> personWords = List.of(p.getName().fullName.toLowerCase().split("\\s+"));
+        for (String keyword : keywords) {
+            if (personWords.contains(keyword.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean matchesOptionalFields(Person p, PersonInformation info) {
+        boolean isPhoneMatching = info.phone.map(ph -> ph.equals(p.getPhone())).orElse(true);
+        boolean isEmailMatching = info.email.map(em -> p.getEmail().map(em::equals).orElse(false)).orElse(true);
+        boolean isAddressMatching = info.address.map(ad -> p.getAddress().map(ad::equals).orElse(false)).orElse(true);
+        boolean isTagsMatching = info.tags.isEmpty() || p.getTags().containsAll(info.tags);
+        return isPhoneMatching && isEmailMatching && isAddressMatching && isTagsMatching;
+    }
+
     private static boolean matchesInformation(Person p, PersonInformation info) {
-        if (!p.getName().equalsIgnoreCase(info.name)) {
-            return false;
-        }
-        // checking phone number:
-        if (!info.phone.map(ph -> ph.equals(p.getPhone())).orElse(true)) {
-            return false;
-        }
-        if (!info.email.map(em -> p.getEmail().map(e -> em.equals(e)).orElse(false))
-                .orElse(true)) {
-            return false;
-        }
-        if (!info.address.map(ad -> p.getAddress().map(a -> ad.equals(a)).orElse(false))
-                .orElse(true)) {
-            return false;
-        }
-        if (!info.tags.isEmpty() && !p.getTags().containsAll(info.tags)) {
-            return false;
-        }
-        return true;
+        boolean isNameMatching = p.getName().equalsIgnoreCase(info.name);
+        boolean isPhoneMatching = info.phone.map(ph -> ph.equals(p.getPhone())).orElse(true);
+        boolean isEmailMatching = info.email.map(em -> p.getEmail().map(em::equals).orElse(false)).orElse(true);
+        boolean isAddressMatching = info.address.map(ad -> p.getAddress().map(ad::equals).orElse(false)).orElse(true);
+        boolean isTagsMatching = info.tags.isEmpty() || p.getTags().containsAll(info.tags);
+        return isNameMatching && isPhoneMatching && isEmailMatching && isAddressMatching && isTagsMatching;
     }
 
     /**
@@ -342,5 +372,14 @@ public class ModelManager implements Model {
         return addressBook.getPinnedPersonList().indexOf(pinnedPerson);
     }
 
-}
+    @Override
+    public boolean isPhotoShared(Photo photo, Person personToExclude) {
+        requireNonNull(photo);
+        requireNonNull(personToExclude);
 
+        return addressBook.getPersonList().stream()
+                .filter(p -> !p.isSamePerson(personToExclude))
+                .anyMatch(p -> p.getPhoto().equals(Optional.of(photo)));
+    }
+
+}

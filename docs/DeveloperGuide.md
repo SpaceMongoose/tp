@@ -110,8 +110,9 @@ How the `Logic` component works:
 
 1. When `Logic` is called upon to execute a command, it is passed to an `AddressBookParser` object which in turn creates a parser that matches the command (e.g., `DeleteCommandParser`) and uses it to parse the command.
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
-1. The command can communicate with the `Model` when it is executed (e.g. to delete a person).<br>
-   Note that although this is shown as a single step in the diagram above (for simplicity), in the code it can take several interactions (between the command object and the `Model`) to achieve.
+1. The command can communicate with the `Model` when it is executed (e.g., to delete a person).<br>
+   Note that although this is shown as a single step in the diagram above (for simplicity), in the code it can take several interactions (between the comm
+2. and object and the `Model`) to achieve.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned back from `Logic`.
 
 Here are the other classes in `Logic` (omitted from the class diagram above) that are used for parsing a user command:
@@ -131,7 +132,7 @@ How the parsing works:
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores the currently 'selected' `Person` objects (e.g., results of a search query) as a separate _filtered_ list which is exposed to outsiders as an unmodifiable `ObservableList<Person>` that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list change.
+* stores the currently 'selected' `Person` objects (e.g., results of a search query) as a separate _filtered_ list which is exposed to outsiders as an unmodifiable `ObservableList<Person>` that can be 'observed' e.g., the UI can be bound to this list so that the UI automatically updates when the data in the list change.
 * stores a `UserPref` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPref` objects.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
@@ -146,14 +147,17 @@ The `Model` component,
 
 ### Storage component
 
-**API** : [`Storage.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/storage/Storage.java)
+**API** : [`Storage.java`](https://github.com/AY2526S2-CS2103-F08-4/tp/tree/master/src/main/java/seedu/address/storage/Storage.java)
 
-<puml src="diagrams/StorageClassDiagram.puml" width="550" />
+<puml src="diagrams/StorageClassDiagram.puml" width="700" />
 
 The `Storage` component,
 * can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
-* inherits from both `AddressBookStorage` and `UserPrefStorage`, which means it can be treated as either one (if only the functionality of only one is needed).
-* depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
+* inherits from both `AddressBookStorage` and `UserPrefsStorage`, which means it can be treated as either one (if only the functionality of only one is needed).
+* depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`).
+* persists `Event` objects as a top-level list in the address book JSON, identified by a unique integer ID. Each `JsonAdaptedPerson` stores a list of event IDs as foreign keys, which are resolved back into `Event` objects during loading.
+* persists the pinned persons list separately within the address book JSON. During loading, pinned entries are resolved against the main persons list to ensure a single source of truth.
+* **Note:** CSV import/export (`import`/`export` commands) is handled at the `Logic` layer via `CsvUtil` in `Commons`, and is not part of the `Storage` component.
 
 ### Common classes
 
@@ -253,7 +257,7 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 * **Alternative 2:** Individual command knows how to undo/redo by
   itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
+  * Pros: Will use less memory (e.g., for `delete`, just save the person being deleted).
   * Cons: We must ensure that the implementation of each individual command are correct.
 
 _{more aspects and alternatives to be added}_
@@ -270,6 +274,11 @@ The command retrieval mechanism is implemented as a UI-level feature split betwe
 storing previously entered command strings and handling navigation state (e.g., current history pointer and the user's
 latest in-progress input).
 
+This design keeps parser and command execution logic unchanged, since retrieval is triggered by key events in the command input box rather than by a typed command word.
+
+History is non-persistent by design. Command history exists only in memory for the current application run, and is cleared when the application closes.
+
+#### Usage scenario
 The interaction flow is as follows:
 
 * User enters a command and presses `Enter`.
@@ -290,10 +299,6 @@ The interaction flow is as follows:
 * When user manually edits a previous command, `CommandBox` syncs the current text to
   `CommandHistory` as the in-progress input.
 
-
-This design keeps parser and command execution logic unchanged, since retrieval is triggered by key events in the command input box rather than by a typed command word.
-
-History is non-persistent by design. Command history exists only in memory for the current application run, and is cleared when the application closes.
 
 #### Design Considerations
 **Aspect: Behavior of retrieval and navigation**
@@ -331,6 +336,113 @@ History is non-persistent by design. Command history exists only in memory for t
 
 Given current goals, Alternative 1 is preferred because the feature focuses on fast command-line input recall rather than
 command-output reporting.
+### Pin/Unpin contact feature
+
+#### Implementation
+
+The pin/unpin feature is implemented as `PinCommand` and `UnpinCommand`, both implementing `Command`. The feature spans the `Logic`, `Model`, `Storage`, and `UI` components.
+
+The following class diagram shows the main classes involved in the feature:
+
+<puml src="diagrams/PinClassDiagram.puml" alt="PinClassDiagram" width=75% />
+
+`PinCommandParser` and `UnpinCommandParser` each parse the user's input and construct their respective commands with a `PersonInformation` object as the matching criteria. `PinCommand#execute(Model)` resolves the target by finding all matching contacts, filtering out those already pinned, and applying shared disambiguation logic. `UnpinCommand#execute(Model)` mirrors this — it filters to only pinned matches and resolves from those. Both commands throw an error if no match or multiple matches remain.
+
+`AddressBook` maintains two lists: `persons` as the source of truth for all contacts, and `pinnedPersons` as an ordered list of pinned contacts. The insertion order of `pinnedPersons` defines the display order among pinned contacts. The UI reorders the displayed list by sorting against this pinned list, keeping pinned contacts at the top while preserving the relative order of unpinned contacts.
+
+Pinned state is persisted in the JSON save file and reconstructed on load. The UI reflects pin state via a pin indicator shown on each pinned contact's card.
+
+#### Usage scenario
+
+The following sequence diagram shows how a `pin` command flows through the `Logic` component. The `unpin` command follows the same flow, except it filters to only pinned matches and calls `model.unpinPerson(...)` instead.
+
+<puml src="diagrams/PinSequenceDiagram-Logic.puml" alt="PinSequenceDiagram-Logic" />
+
+<box type="info" seamless>
+
+**Note:** The lifeline for `PinCommand` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline reaches the end of the diagram.
+
+</box>
+
+How the `pinPerson` call is handled inside the `Model` component is shown below:
+
+<puml src="diagrams/PinSequenceDiagram-Model.puml" alt="PinSequenceDiagram-Model" />
+
+The following activity diagram summarizes the command's match-resolution flow:
+
+<puml src="diagrams/PinActivityDiagram.puml" width="600" alt="PinActivityDiagram" />
+
+#### Design considerations
+
+**Aspect: How pinned contacts are represented**
+
+* **Alternative 1 (current choice):** Maintain a separate `pinnedPersons` list in `AddressBook`.
+  * Pros: Keeps pin ordering explicit and makes pinned-first sorting straightforward.
+  * Pros: Allows pin state to be persisted independently from the main display order.
+  * Cons: The model must preserve consistency between `persons` and `pinnedPersons`.
+
+* **Alternative 2:** Store a pinned flag inside each `Person`.
+  * Pros: Avoids maintaining a second list for pinned contacts.
+  * Cons: Pin order would need extra bookkeeping, and editing a person would mix contact data with UI ordering state.
+  * Cons: `isPinned` is not an intrinsic property of a person — it is a feature concern. Placing it on `Person` dilutes the class's responsibility by coupling contact data with application-level behaviour, violating the principle that a `Person` should model a real-world entity rather than a feature's state.
+
+**Aspect: How the displayed list is reordered**
+
+* **Alternative 1 (current choice):** Reorder the UI view using `sortedPersons` and `createPinnedComparator()`.
+  * Pros: Keeps the base `persons` list unchanged while still presenting pinned contacts first.
+  * Pros: Preserves the relative order of unpinned contacts.
+  * Cons: The ordering logic is split between stored pin state and a comparator in `ModelManager`.
+
+* **Alternative 2:** Physically move pinned contacts inside the main person list.
+  * Pros: The displayed order would directly match the underlying storage order.
+  * Cons: Reordering the main list couples display concerns to storage order and makes non-pin-related operations
+    harder to reason about.
+  * Cons: Unable to restore order if the pinned contact was unpinned.
+
+### Contact Disambiguating feature
+
+The contact disambiguation feature allows NAB to accurately resolve a target contact when multiple contacts share the same name. This feature is utilized by commands that require precise targeting (e.g., delete, edit) and spans the Logic and Model components.
+
+#### Implementation
+
+The core of this feature relies on the `PersonInformation` class. It encapsulates mandatory fields like `Name` and any optional fields (e.g., phone, email, address, or tags) that can be compared against existing contacts.
+
+The disambiguation logic is driven by `CommandUtil` and `ModelManager`: <br>
+* `CommandUtil#targetPerson(Model, PersonInformation)` acts as the orchestrator for the resolution process. This delegates the search and evaluation of `Person` to the methods below.<br><br>
+* `ModelManager#findPersons(PersonInformation)` performs the filtering of the address book. It first applies a broad case-insensitive match on the name, followed by an "enriched search" that narrows down the contact candidates by strictly matching any optional fields present in the `PersonInformation` object.<br><br>
+* `CommandUtil#targetPersonFromMatches(Model, List<Person>)` evaluates the resulting filtered list. It enforces that exactly one target person is isolated. <br>
+  * If the search results in zero matches, it throws a `CommandException`. <br>
+  * If it results in multiple ambiguous matches, it updates the UI to display only the conflicting contacts and throws a `CommandException` to prompt the user for better criteria.
+
+#### Usage scenario
+
+The following sequence diagram illustrates the functional path taken when a user executes a command that triggers the disambiguation process.
+
+<puml src="diagrams/DisambiguationSequenceDiagram.puml"/>
+
+<box type="info" seamless>
+
+**Note:** Due to a PlantUML rendering limitation, the `:XYZCommand` lifeline is shown to prematurely end at the 1st alt path. The unified destroy marker (X) at the bottom represents the termination of the command's lifecycle for all three alternative paths.
+
+</box>                  
+
+The following activity diagram summarizes the command's match-resolution flow:
+
+<puml src="diagrams/DisambiguationActivityDiagram.puml"/>
+
+#### Design considerations
+
+**Aspect: How search criteria are passed across architectural boundaries**
+
+* **Alternative 1 (current choice):** Encapsulate all search criteria (Name, Phone, Email, Address, Tag) within a dedicated `PersonInformation` object.
+    * Pros: Highly extensible. If a new optional field is added and is considered as a search criterion, the method signatures across `Logic` and `Model` remain unchanged. Only the `PersonInformation` wrapper is updated.
+    * Pros: Resolves "Long Parameter List" code smell. Makes method signatures succinct.
+    * Cons: Additional overhead from creating and maintaining an additional class.
+<br><br>
+* **Alternative 2:** Pass individual fields directly as arguments to the utility and model methods.
+    * Pros: Does not require creating and maintaining a new class.
+    * Cons: Creates method signatures with "Long Parameter List" code smell.
+    * Cons: Tight coupling. Any changes to the search criteria (e.g., adding new search criteria, removing search criteria) will require modification to all the method signatures. 
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -370,11 +482,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* * *`  | student             | view a peer's contact details                                                                     | quickly access their information when I need to communicate or plan something with them     |
 | `* * *`  | student             | delete a peer's contact                                                                           | remove old information                                                                      |
 | `* * *`  | student             | search for a specific contact by their name                                                       | quickly find their details without scrolling through the whole list                         |
-| `* * *`  | organized student   | categorise my peers according to context (e.g. modules, tutorial class, CCA, orientation group)  | search for contacts in a specific grouping                                                  |
-| `* * *`  | organized student   | create an event for a commitment I have (e.g. module/project/CCA) linked to relevant contacts    | keep track of events and remind/contact involved individuals                                |
+| `* * *`  | organized student   | categorise my peers according to context (e.g., modules, tutorial class, CCA, orientation group)  | search for contacts in a specific grouping                                                  |
+| `* * *`  | organized student   | create an event for a commitment I have (e.g., module/project/CCA) linked to relevant contacts    | keep track of events and remind/contact involved individuals                                |
 | `* * *`  | organized student   | delete an existing event for a commitment I have                                                  | remove any old or cancelled events so I don't mix up confirmed arrangements                 |
 | `* * *`  | organized student   | view all events related to a specific contact                                                     | easily view my arranged commitments with the specified contact                              |
-| `* * *`  | efficient student   | filter my peers by context                                                                        | quickly find someone from a certain grouping (e.g. tutorial class)                         |
+| `* * *`  | efficient student   | filter my peers by context                                                                        | quickly find someone from a certain grouping (e.g., tutorial class)                         |
 | `* *`    | student             | update a peer's contact                                                                           | always keep my contact information up to date                                               |
 | `* *`    | student             | avoid contact duplication when adding                                                             | ensure I don't get confused from duplicate contacts                                         |
 | `* *`    | organized student   | update an existing event for a commitment I have                                                  | always keep events updated in the case the details are changed                              |

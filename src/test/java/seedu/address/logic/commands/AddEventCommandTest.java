@@ -28,6 +28,7 @@ import seedu.address.model.event.Title;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonInformation;
+import seedu.address.model.person.Photo;
 import seedu.address.testutil.PersonBuilder;
 
 public class AddEventCommandTest {
@@ -63,7 +64,8 @@ public class AddEventCommandTest {
 
     @Test
     public void execute_newEvent_addSuccessful() throws Exception {
-        Event existingEvent = eventOf("Prepare slides", "Draft deck", "2026-02-20 1000", "2026-02-20 1200");
+        Event existingEvent = eventOf("Prepare slides", "Draft deck", "2026-02-20 1000",
+                "2026-02-20 1200");
         Event eventToAdd = eventOf(VALID_TITLE, VALID_DESC, VALID_START, VALID_END);
         AddEventCommand addEventCommand = new AddEventCommand(infoOf(VALID_NAME), eventToAdd);
 
@@ -73,7 +75,8 @@ public class AddEventCommandTest {
 
         CommandResult commandResult = addEventCommand.execute(modelStub);
 
-        assertEquals(String.format(AddEventCommand.MESSAGE_SUCCESS, personToEdit.getName(), eventToAdd),
+        assertEquals(
+                String.format(AddEventCommand.MESSAGE_SUCCESS, personToEdit.getName(), eventToAdd),
                 commandResult.getFeedbackToUser());
         assertEquals(personToEdit, modelStub.targetPerson);
         assertTrue(modelStub.editedPerson.getEvents().contains(existingEvent));
@@ -81,6 +84,7 @@ public class AddEventCommandTest {
         assertEquals(2, modelStub.editedPerson.getEvents().size());
         assertEquals(eventToAdd, modelStub.addedEvent);
         assertFalse(modelStub.linkCalled);
+        assertEquals(modelStub.editedPerson, modelStub.shownPerson);
     }
 
     @Test
@@ -90,11 +94,13 @@ public class AddEventCommandTest {
         AddEventCommand addEventCommand = new AddEventCommand(infoOf(VALID_NAME), eventToAdd);
 
         Person personToEdit = new PersonBuilder().withName(VALID_NAME).build();
-        ModelStubWithPersonExistingEvent modelStub = new ModelStubWithPersonExistingEvent(personToEdit, existingEvent);
+        ModelStubWithPersonExistingEvent modelStub = new ModelStubWithPersonExistingEvent(
+                personToEdit, existingEvent);
 
         CommandResult commandResult = addEventCommand.execute(modelStub);
 
-        assertEquals(String.format(AddEventCommand.MESSAGE_SUCCESS, personToEdit.getName(), eventToAdd),
+        assertEquals(
+                String.format(AddEventCommand.MESSAGE_SUCCESS, personToEdit.getName(), eventToAdd),
                 commandResult.getFeedbackToUser());
         assertTrue(modelStub.editedPerson.getEvents().contains(existingEvent));
         assertEquals(1, modelStub.editedPerson.getEvents().size());
@@ -113,7 +119,7 @@ public class AddEventCommandTest {
 
         assertThrows(CommandException.class,
                 String.format(AddEventCommand.MESSAGE_DUPLICATE_EVENT, eventToAdd), () ->
-                    addEventCommand.execute(modelStub));
+                        addEventCommand.execute(modelStub));
     }
 
     @Test
@@ -124,8 +130,7 @@ public class AddEventCommandTest {
         Person person = new PersonBuilder().withName(VALID_NAME).build();
         ModelStubWithOverlappingEvent modelStub = new ModelStubWithOverlappingEvent(person);
 
-        assertThrows(CommandException.class,
-            AddEventCommand.MESSAGE_CLASHING_EVENT, () ->
+        assertThrows(CommandException.class, AddEventCommand.MESSAGE_CLASHING_EVENT, () ->
                 addEventCommand.execute(modelStub));
     }
 
@@ -135,8 +140,7 @@ public class AddEventCommandTest {
         AddEventCommand addEventCommand = new AddEventCommand(infoOf(VALID_NAME), eventToAdd);
         ModelStubWithNoPerson modelStub = new ModelStubWithNoPerson();
 
-        assertThrows(CommandException.class, Messages.MESSAGE_NO_MATCH, () ->
-                addEventCommand.execute(modelStub));
+        assertThrows(CommandException.class, Messages.MESSAGE_NO_MATCH, () -> addEventCommand.execute(modelStub));
     }
 
     @Test
@@ -145,7 +149,8 @@ public class AddEventCommandTest {
         Person second = new PersonBuilder().withName(VALID_NAME).withPhone("90002222").build();
         Event eventToAdd = eventOf(VALID_TITLE, VALID_DESC, VALID_START, VALID_END);
         AddEventCommand addEventCommand = new AddEventCommand(infoOf(VALID_NAME), eventToAdd);
-        ModelStubWithMultiplePersons modelStub = new ModelStubWithMultiplePersons(List.of(first, second));
+        ModelStubWithMultiplePersons modelStub = new ModelStubWithMultiplePersons(
+                List.of(first, second));
 
         assertThrows(CommandException.class, Messages.MESSAGE_MULTIPLE_MATCH, () ->
                 addEventCommand.execute(modelStub));
@@ -186,58 +191,72 @@ public class AddEventCommandTest {
         public void setUserPrefs(ReadOnlyUserPrefs userPrefs) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public ReadOnlyUserPrefs getUserPrefs() {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public GuiSettings getGuiSettings() {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void setGuiSettings(GuiSettings guiSettings) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public Path getAddressBookFilePath() {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void setAddressBookFilePath(Path addressBookFilePath) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void setAddressBook(ReadOnlyAddressBook newData) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public ReadOnlyAddressBook getAddressBook() {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public boolean hasPerson(Person person) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void deletePerson(Person target) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void addPerson(Person person) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void setPerson(Person target, Person editedPerson) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public ObservableList<Person> getFilteredPersonList() {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void updateFilteredPersonList(Predicate<Person> predicate) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void showAllPersons() {
             throw new AssertionError("This method should not be called.");
@@ -251,47 +270,66 @@ public class AddEventCommandTest {
         public void showPersons(Predicate<Person> predicate) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void showMatchingPersons(java.util.Set<Person> persons) {
             throw new AssertionError("This method should not be called.");
         }
 
         @Override
+        public void showPerson(Person person) {
+            throw new AssertionError("This method should not be called.");
+        }
+        @Override
         public void showEventsForPerson(Person person) {
             throw new AssertionError("This method should not be called.");
         }
+
+        @Override
+        public void showNoEvents() {
+            throw new AssertionError("This method should not be called.");
+        }
+
         @Override
         public ObservableList<Event> getFilteredEventList() {
             throw new AssertionError("This method should not be called.");
         }
-        @Override
-        public void updateFilteredEventList(Predicate<Event> predicate) {
-            throw new AssertionError("This method should not be called.");
-        }
+
         @Override
         public List<Person> findPersons(PersonInformation info) {
             throw new AssertionError("This method should not be called.");
         }
+
+        @Override
+        public List<Person> searchPersons(PersonInformation info) {
+            throw new AssertionError("This method should not be called.");
+        }
+
         @Override
         public boolean hasEvent(Event event) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void addEvent(Event event) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void deleteEvent(Event target) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public void setEvent(Event target, Event editedEvent) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public Event linkPersonToEvent(Event eventToAdd) {
             throw new AssertionError("This method should not be called.");
         }
+
         @Override
         public Event unlinkPersonFromEvent(Event eventToUnlink) {
             throw new AssertionError("This method should not be called.");
@@ -316,12 +354,18 @@ public class AddEventCommandTest {
         public boolean isPersonPinned(Person person) {
             throw new AssertionError("This method should not be called.");
         }
+
+        @Override
+        public boolean isPhotoShared(Photo photo, Person personToExclude) {
+            throw new AssertionError("This method should not be called.");
+        }
     }
 
     private class ModelStubWithPersonNoEvent extends ModelStub {
         private final Person person;
         private Person targetPerson;
         private Person editedPerson;
+        private Person shownPerson;
         private Event addedEvent;
         private boolean addCalled;
         private boolean linkCalled;
@@ -346,13 +390,13 @@ public class AddEventCommandTest {
         }
 
         @Override
-        public void updateFilteredPersonList(Predicate<Person> predicate) {}
+        public void updateFilteredPersonList(Predicate<Person> predicate) {
+        }
 
         @Override
-        public void updateFilteredEventList(Predicate<Event> predicate) {}
-
-        @Override
-        public void showEventsForPerson(Person person) {}
+        public void showEventsForPerson(Person person) {
+            shownPerson = person;
+        }
 
         @Override
         public ReadOnlyAddressBook getAddressBook() {
@@ -386,6 +430,7 @@ public class AddEventCommandTest {
         private final Person person;
         private final Event existingEvent;
         private Person editedPerson;
+        private Person shownPerson;
         private boolean addCalled;
         private boolean linkCalled;
 
@@ -408,13 +453,13 @@ public class AddEventCommandTest {
         }
 
         @Override
-        public void updateFilteredPersonList(Predicate<Person> predicate) {}
+        public void updateFilteredPersonList(Predicate<Person> predicate) {
+        }
 
         @Override
-        public void updateFilteredEventList(Predicate<Event> predicate) {}
-
-        @Override
-        public void showEventsForPerson(Person person) {}
+        public void showEventsForPerson(Person person) {
+            shownPerson = person;
+        }
 
         @Override
         public ReadOnlyAddressBook getAddressBook() {
@@ -466,10 +511,9 @@ public class AddEventCommandTest {
         }
 
         @Override
-        public void updateFilteredPersonList(Predicate<Person> predicate) {}
+        public void updateFilteredPersonList(Predicate<Person> predicate) {
+        }
 
-        @Override
-        public void updateFilteredEventList(Predicate<Event> predicate) {}
     }
 
     private class ModelStubWithNoPerson extends ModelStub {
@@ -479,10 +523,8 @@ public class AddEventCommandTest {
         }
 
         @Override
-        public void updateFilteredPersonList(Predicate<Person> predicate) {}
-
-        @Override
-        public void updateFilteredEventList(Predicate<Event> predicate) {}
+        public void updateFilteredPersonList(Predicate<Person> predicate) {
+        }
 
         @Override
         public boolean hasOverlappingEvent(Event event) {
@@ -513,11 +555,6 @@ public class AddEventCommandTest {
         @Override
         public void updateFilteredPersonList(Predicate<Person> predicate) {
             filteredPersonsUpdated = true;
-        }
-
-        @Override
-        public void updateFilteredEventList(Predicate<Event> predicate) {
-            filteredEventsUpdated = true;
         }
 
         @Override
