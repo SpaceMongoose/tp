@@ -365,6 +365,7 @@ public class DeleteEventCommandTest {
 
         @Override
         public void showEventsForPerson(Person person) {
+            shownPerson = person;
         }
 
         @Override

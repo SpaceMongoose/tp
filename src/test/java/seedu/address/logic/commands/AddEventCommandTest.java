@@ -390,6 +390,7 @@ public class AddEventCommandTest {
 
         @Override
         public void showEventsForPerson(Person person) {
+            shownPerson = person;
         }
 
         @Override
@@ -452,6 +453,7 @@ public class AddEventCommandTest {
 
         @Override
         public void showEventsForPerson(Person person) {
+            shownPerson = person;
         }
 
         @Override
