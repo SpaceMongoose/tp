@@ -142,7 +142,7 @@ The `Model` component,
 * stores the address book data i.e., all `Person` objects (contained in a `UniquePersonList`) and all pinned `Person` objects (contained in a separate `UniquePersonList`), as well as all `Event` objects (contained in a `UniqueEventList`).
 * exposes the currently 'selected' `Person` objects (e.g., results of a search query or a `pin` operation) as a _filtered_ and _sorted_ live view over the address book's person list, exposed to outsiders as an unmodifiable `ObservableList<Person>` 
 that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list changes. The _sorted_ list's comparator is dynamically toggled — it floats pinned contacts to the top only when 
-showing all persons (`showAllPersonsPinnedFirst()`), and is disabled during search, filter, or event-view operations.
+showing all persons (`showAllPersonsPinnedFirst()`) and tag-filtered views (`showPersons(...)`), and is disabled during search-result, single-person, or event-view operations.
 * exposes the currently 'selected' `Event` objects (e.g., results of an `event view` query) as a _filtered_ live view over the address book's event list, similarly exposed as an unmodifiable `ObservableList<Event>`.
 * stores a `UserPrefs` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components).
@@ -832,6 +832,78 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 --------------------------------------------------------------------------------------------------------------------
 
+## **Appendix: Effort**
+
+##### Why NAB required more effort than AB3
+
+AB3 mainly manages one entity type and many operations can rely on direct list selection. NAB extends that baseline into a product with **two closely related entity types**, `Person` and `Event`, while still remaining a CLI-first brownfield evolution of AB3. This increased the effort significantly because many features now involve not just storing data, but preserving relationships and consistency between contacts, events, UI views, and storage.
+
+##### Main difficulty: modelling events realistically
+
+The hardest design problem was the **event model**. In NAB, an event is not just a note attached to one contact, and it is not a free-standing calendar entry either. It represents a commitment that implicitly involves the NAB user together with one or more saved contacts. Because the user is not modelled as an explicit in-app entity, the event could not be implemented as a straightforward association class.
+
+We therefore designed events as **global shared entities** stored in a `UniqueEventList`, while each `Person` keeps references to those events. This decision increased the implementation effort because it required custom handling for:
+
+* linking multiple contacts to the same canonical event
+* distinguishing duplicate event linkage from true event clashes
+* enforcing a global no-overlap rule
+* tracking participant counts and cleaning up orphaned events
+* reconstructing shared event references correctly during storage loading
+
+##### Realistic command targeting made the logic harder
+
+Another major difficulty came from replacing AB3's index-based targeting with **name-based resolution and disambiguation**. For a realistic address book, users remember names, not list indices. NAB also allows duplicate names, which meant the team had to build a reusable disambiguation mechanism rather than depending on unique-name assumptions or index selection.
+
+This affected a large number of commands, including `edit`, `delete`, `pin`, `unpin`, `tag`, `event add`, `event view`, and `event delete`. Each of these commands had to support:
+
+* matching by name first
+* narrowing by optional fields such as phone, email, address, and tags
+* surfacing ambiguous results safely instead of acting on the wrong contact
+
+This added substantial parser, model, and testing complexity compared to AB3.
+
+##### Data handling and storage complexity
+
+NAB also went beyond AB3 in its storage and file-handling requirements. Besides JSON persistence, the product supports **CSV import/export** with both `add` and `overwrite` modes. This created many extra cases to design and test, such as:
+
+* reconstructing persons and events from two related CSV files
+* merging imported persons with already existing canonical events
+* preserving pinned state through import/export
+* skipping malformed or duplicate rows safely
+* ensuring that cross-entity links remain valid after import
+
+Profile photo support introduced another layer of effort in file management: path validation, copying external images into managed storage, avoiding invalid reuse, and deleting photos safely only when no other contact still depends on them.
+
+##### Additional implementation effort beyond the core model
+
+On top of the major modelling work, NAB also introduced several non-trivial user-facing features that added meaningful implementation and testing effort:
+
+* pinned contacts with persistent ordering and separate pinned-state storage
+* command history implemented at the UI layer for CLI-heavy usage
+* copy-to-clipboard support from contact cards
+* event-aware list views that keep the person and event panels synchronized
+
+Each feature is individually smaller than the event/disambiguation work, but together they significantly increased the integration surface of the product.
+
+##### Reuse and its impact on effort
+
+NAB reused a meaningful portion of AB3's infrastructure, including the high-level architecture, JavaFX scaffold, command/parser structure, base contact management flow, and JSON framework. This definitely saved effort, well above 5%, because the team did not need to build the application skeleton from scratch.
+
+However, the reuse mainly provided a platform rather than a shortcut for the most difficult work. The most effort-intensive parts of NAB were custom additions built on top of that reused base. This includes the global event model, name-based disambiguation, pinned-state handling, CSV import/export logic, and photo/file lifecycle management.
+
+##### Key achievement
+
+The main achievement of the project was turning AB3 into a more realistic student-facing contact manager while still keeping it usable as a CLI-first product. In particular, the project successfully combined:
+
+* contact management with duplicate-name support
+* a shared event model with cross-entity consistency
+* realistic import/export and file-handling features
+* several usability improvements beyond the original AB3 baseline
+
+Overall, the project required substantially more effort than AB3 because it introduced both deeper domain modelling and more difficult consistency problems, while still operating within the constraints of a portable, single-user, human-editable desktop application.
+
+--------------------------------------------------------------------------------------------------------------------
+
 ## **Appendix: Instructions for manual testing**
 
 Given below are instructions to test the app manually.
@@ -882,6 +954,7 @@ The sample data also contains existing events, so `event view n/Alex Yeoh` and `
 | Filter by multiple tags | `filter t/colleagues, family` | - | Contacts tagged with either `colleagues` or `family` are shown. |
 | Reset person list | `list` | - | The full contact list is shown again. |
 | Pin contact | `pin n/Bernice Yu` | - | `Bernice Yu` becomes pinned and appears above unpinned contacts in the full list. |
+| Filter preserves pinned-first ordering | `pin n/Bernice Yu` then `filter t/friends` | Run the commands in sequence | `Alex Yeoh` and `Bernice Yu` are shown, with pinned `Bernice Yu` above `Alex Yeoh`. |
 | Pin already pinned contact | `pin n/Bernice Yu` | - | Error indicating that the contact is already pinned. |
 | Unpin contact | `unpin n/Bernice Yu` | - | `Bernice Yu` is unpinned. |
 | Unpin already unpinned contact | `unpin n/Bernice Yu` | - | Error indicating that the contact is already unpinned. |
