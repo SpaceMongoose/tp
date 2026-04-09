@@ -180,7 +180,7 @@ Before examining the individual commands for managing contacts, please refer to 
 | `e/EMAIL` | • Must be of the standard format: `local-part@domain`.<br>• **Local-part:** Can only contain alphanumeric characters and the special characters `+`, `_`, `.`, and `-`. It cannot start or end with a special character.<br>• **Domain:** Made up of domain labels separated by periods (`.`).<br>&nbsp;&nbsp;◦ Must end with a domain label at least 2 characters long.<br>&nbsp;&nbsp;◦ Each label must start and end with alphanumeric characters.<br>&nbsp;&nbsp;◦ Labels can contain hyphens (`-`), but no other special characters. | `e/johnd@example.com` |
 | `a/ADDRESS` | • Can contain alphanumeric characters, spaces, and the following special characters: `#`, `_`, `,` (comma), and `-` (hyphen).<br>• Cannot be blank or consist only of spaces (must start with an alphanumeric or allowed special character).                                                                                                                                                                                                                                                                                              | `a/John street, block 123, #01-01` |
 | `t/TAG` | • Can contain letters, digits, spaces, hyphens (`-`), and underscores (`_`).<br>• Must start with an alphanumeric character (a letter or digit).<br>• Must be between 1 and 20 characters long.                                                                                                                                                                                                                                                                                                                                           | `t/friend` |
-| `pfp/PHOTO_PATH` | • File path must end with a valid image extension: `.png`, `.jpg`, or `.jpeg` (case-insensitive).<br>• Can be absolute (e.g., `C:/Users/Alex/Pictures/me.jpg`) or relative to the app folder (e.g., `images/me.png`).<br>• The specified file must exist on your computer; NAB will copy it into the `data/images/` directory                                                                                                                                                                                                               | `pfp/images/me.png` |
+| `pfp/PHOTO_PATH` | • File path must end with a valid image extension: `.png`, `.jpg`, or `.jpeg` (case-insensitive).<br>• Can be absolute (e.g., `C:/Users/Alex/Pictures/me.jpg`) or relative to the app folder (e.g., `images/me.png`).<br>• The specified file must exist on your computer; NAB will copy it into the `data/images/` directory<br>• File path cannot be referencing any subfolder/files residing in NAB's `data/images/` folder.                                                                                                                                                                                                             | `pfp/images/me.png` |
 
 </panel>
 
@@ -405,10 +405,22 @@ Unpins the person identified by their name.
 
 Format: `unpin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
 
+<panel header=":fa-solid-code: **Examples**" type="info">
 
-Examples:
-* `unpin n/John Doe` unpins John Doe when the name uniquely identifies the contact.
-* `unpin n/John Doe p/91234567` unpins the matching John Doe contact by name and phone number.
+- `unpin n/John Doe`<br>
+Unpins John Doe when the name uniquely identifies the contact.
+
+- `unpin n/John Doe p/91234567`<br>
+Unpins the matching John Doe contact by name and phone number.
+
+</panel>
+
+<panel header=":fa-solid-exclamation-triangle: **Important: Disambiguating contacts with the same name**" type="danger">
+
+- If you encounter the error `Multiple matches identified! Please provide more arguments.`, add optional parameters immediately after n/NAME to narrow down the match — Phone number, Email, Address, or Tag.
+- See [User Disambiguation](#user-disambiguation) for details.
+
+</panel>
 
 ### Assigning tag(s) to person(s): `tag`
 
@@ -416,24 +428,42 @@ Assigns one or more tags to one or more contacts in one command.
 
 Format: `tag label/TAG_TO_ASSIGN [label/TAG_TO_ASSIGN]... n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... [n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...]...`
 
-<box type="tip" seamless>
-
-**Tip:** Use optional fields immediately after each `n/NAME` to disambiguate contacts with the same name.
-</box>
-
-How it works:
-* `label/...` are the tags that will be assigned to **all** specified contacts.
-* Contact segments start with `n/NAME`.
-* Optional fields after a given `n/NAME` apply only to that contact segment.
-* The tag-assignment segment (`label/...`) and person segments (`n/...`) cannot be mixed.
-  All `label/...` entries must appear before the first `n/...`.
+* Start by listing the tag(s) using `label/...`; these tags are applied to **every** specified contact.
+* After the tags, add one or more contact segments, each starting with `n/NAME`.
+* Optional fields placed immediately after a contact's `n/NAME` (such as `p/`, `e/`, `a/`, `t/`) apply only to that contact.
+* Do not mix tag and contact segments. All `label/...` entries must come before the first `n/...`.
 * If a tag does not exist yet, NAB creates it automatically.
 * If a person segment matches multiple contacts, NAB shows those matches and asks for a more specific command.
 
-Examples:
-* `tag label/CS2103 label/CS2030S n/Alice n/Bob`
-* Suppose there are multiple `Alice` and `Bob`, an enriched search would be `tag label/CS2103 label/CS2030S n/Alice p/81234567 n/Bob a/Clementi`,
-  where Alice has a phone number of `81234567` and Bob has an address of `Clementi`.
+<panel header=":fa-solid-code: **Examples**" type="info">
+
+- `tag label/CS2103 n/John Doe`<br>
+Assigns 1 tag (`CS2103`) to 1 user (`John Doe`).
+
+- `tag label/CS2103 label/CS2030S label/CS2040 n/John Doe e/johndoe@example.com`<br>
+Assigns 3 tags (`CS2103`, `CS2030S`, `CS2040`) to 1 user (`John Doe`) using additional fields to disambiguate the user.
+
+- `tag label/CS2103 n/John Doe n/Betsy Crower`<br>
+Assigns 1 tag (`CS2103`) to 2 users (`John Doe` and `Betsy Crower`).
+
+- `tag label/CS2103 label/CS2030S n/John Doe p/91234567 n/Betsy Crower e/betsycrower@example.com`<br>
+Assigns 2 tags (`CS2103`, `CS2030S`) to 2 users (`John Doe` and `Betsy Crower`) using additional fields to disambiguate both users.
+
+</panel>
+
+<panel header=":fa-solid-exclamation-triangle: **Important: Disambiguating contacts with the same name**" type="danger">
+
+- If you encounter the error `Multiple matches identified! Please provide more arguments.`, add optional parameters immediately after n/NAME to narrow down the match — Phone number, Email, Address, or Tag.
+- See [User Disambiguation](#user-disambiguation) for details.
+
+</panel>
+
+<panel header=":fa-solid-lightbulb: **Tip**" type="success">
+
+- Can associate 1 or more tags during the tagging process.
+- Can associate 1 or more persons during the tagging process.
+
+</panel>
 
 ### Deleting a person: `delete`
 
@@ -441,16 +471,22 @@ Deletes the specified person from the address book.
 
 Format: `delete n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`
 
-<box type="tip" seamless>
+<panel header=":fa-solid-code: **Examples**" type="info">
 
-**Tip:** If there are multiple contacts with the same `NAME`, utilize the other optional parameters to narrow down the
-deletion of the correct contact. This can be done by supplying any of the
-following information just after `delete n/NAME`: Phone number, Email, Address or Tag.
-</box>
+- `delete n/John Doe`<br>
+Deletes John Doe when the name uniquely identifies the contact.
 
-Examples:
-* `delete n/Alex Yeoh` deletes the contact with a matching name.
-* Suppose there are multiple `Alex Yeoh`, an enriched search would be `delete n/Alex Yeoh t/cs2103 t/cs2105`
+- `delete n/John Doe p/91234567`<br>
+Deletes the matching John Doe contact by name and phone number.
+
+</panel>
+
+<panel header=":fa-solid-exclamation-triangle: **Important: Disambiguating contacts with the same name**" type="danger">
+
+- If you encounter the error `Multiple matches identified! Please provide more arguments.`, add optional parameters immediately after n/NAME to narrow down the match — Phone number, Email, Address, or Tag.
+- See [User Disambiguation](#user-disambiguation) for details.
+
+</panel>
 
 ### Clearing all entries: `clear`
 
@@ -489,6 +525,16 @@ Format: `event add title/TITLE [desc/DESCRIPTION] start/START_DATE end/END_DATE 
 
 - `event add title/CS2109S Meeting desc/Final discussion on problem set 1 start/2026-03-25 0900 end/2026-03-25 1000 n/David Li p/99272758`<br>
   Adds an event to the David Li with phone number `99272758`, disambiguating between multiple contacts with the same name.
+
+</panel>
+
+<panel header=":fa-solid-exclamation-triangle: **Important: Event uniqueness and time clashes**" type="danger">
+
+- NAB treats the event list as **your schedule** (user point of view).
+- Time clashes are checked **globally** across the event list, not per contact.
+  - Reason: from your point of view, one user cannot be in two places at the same time, so overlapping events are blocked.
+- Overlap means the 2 ranges share actual time in common. Back-to-back events are allowed (for example, one ends at `1000` and another starts at `1000`).
+- If a clash is found, NAB shows: `This event clashes with an existing event in the calendar.`
 
 </panel>
 
@@ -536,10 +582,10 @@ Format: `event delete start/START_DATE n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDR
 
 <panel header=":fa-solid-code: **Examples**" type="info">
 
-- `event delete start/2026-03-12 1100 n/David Li`<br>
+- `event delete start/2026-03-12 1100 to/David Li`<br>
   Deletes the event only if David Li has an assigned event that starts at `2026-03-12 1100`.
 
-- `event delete start/2026-03-12 1100 n/David Li p/99272758`<br>
+- `event delete start/2026-03-12 1100 to/David Li p/99272758`<br>
   Deletes the event only if the David Li with phone number `99272758` has an assigned event that starts at `2026-03-12 1100`, disambiguating between multiple contacts with the same name.
 
 </panel>
@@ -556,17 +602,17 @@ Format: `event delete start/START_DATE n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDR
 ### Exporting contacts: `export`
 Back up your NAB contacts in seconds so you can share, archive, or migrate your data anytime.
 
-This `export` feature allows you to write contacts from NAB into a CSV file.
+This `export` feature allows you to write contacts from NAB into 2 CSV files (`<FILENAME>_persons.csv` and `<FILENAME>_events.csv`).
 
 Format: `export t/EXPORT_TYPE f/FILENAME`
 
 <panel header=":fa-solid-code: **Examples**" type="info">
 
 - `export t/all f/save_file`<br>
-  Exports all contacts in NAB to `save_file.csv`.
+  Exports all contact information in NAB to `save_file_persons.csv` and `save_file_events.csv`.
 
 - `export t/current f/save_file`<br>
-  Exports only the currently displayed contacts to `save_file.csv`.
+  Exports only the currently displayed contact information to `save_file_persons.csv` and `save_file_events.csv`.
 
 </panel>
 
@@ -576,8 +622,8 @@ Format: `export t/EXPORT_TYPE f/FILENAME`
 - `EXPORT_TYPE` must be either:
     - `all` (export every contact in NAB), or
     - `current` (export only the contacts currently shown in the contact list).
-- Enter `FILENAME` without `.csv`, as NAB automatically appends the `.csv` extension for you.
-- The exported file is saved in the same directory as the current NAB data file.
+- Enter `FILENAME` without specifying the `_persons.csv` or `_events.csv` extension. NAB will automatically append it for you.
+- The exported files are saved in the same directory as the current NAB data file.
   - If a file with the same name already exists, it will be overwritten.
 - Order of parameters does not matter.
 
@@ -593,7 +639,7 @@ Use `export t/current ...` after `find` or `filter` to quickly export a specific
 ### Importing contacts: `import`
 Bring your contact data into NAB quickly when switching devices or restoring from a backup.
 
-This `import` feature allows you to load contacts from a CSV file into NAB.
+This `import` feature allows you to load contacts from 2 CSV files (`<FILENAME>_persons.csv` and `<FILENAME>_events.csv`) into NAB.
 
 Format: `import t/IMPORT_TYPE f/FILENAME`
 
@@ -601,20 +647,20 @@ Format: `import t/IMPORT_TYPE f/FILENAME`
 <panel header=":fa-solid-code: **Examples**" type="info">
 
 - `import t/overwrite f/save_file`<br>
-  Imports contacts from `save_file.csv` and replaces the current address book.
+  Imports contacts from `save_file_persons.csv` and event definitions from `save_file_events.csv`, replacing the existing data on the address book.
 
 - `import t/add f/save_file`<br>
-  Imports contacts from `save_file.csv` and adds them to the current address book.
+  Imports contacts from `save_file_persons.csv` and event definitions from `save_file_events.csv`, adding them to the current address book.
 
 </panel>
 
 <panel header=":fa-solid-exclamation-triangle: **Important**" type="danger">
 
 - `IMPORT_TYPE` must be either:
-    - `add` (adds imported contacts to the current address book), or
-    - `overwrite` (replaces the current address book with imported contacts).
-- Enter `FILENAME` without `.csv`, as NAB automatically looks for the file with the `.csv` extension.
-- The CSV file must be placed in the same directory as the current NAB data file.
+    - `add` (adds imported data to the current address book), or
+    - `overwrite` (replaces the current address book with imported data).
+- Enter `FILENAME` without specifying the `_persons.csv` or `_events.csv` extension, as NAB automatically looks for the 2 CSV files belonging to the specified `FILENAME`.
+- The CSV files must be placed in the same directory as the current NAB data file.
 - Contacts in the CSV file that already exist in NAB are skipped to avoid duplicates.
 - Rows with invalid or missing required fields are skipped.
 - Order of parameters does not matter.
@@ -669,7 +715,7 @@ AddressBook data is saved automatically as a JSON file `[JAR file location]/data
 ## Command summary
 
 Action     | Format, Examples
------------|---------------------------------------------------------------------f-------------------------------------------------------------------------------------------------
+-----------|------
 **Add**    | `add n/NAME p/PHONE_NUMBER [e/EMAIL] [a/ADDRESS] [t/TAG]... [pfp/PHOTO_PATH]` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague pfp/images/james.jpg`
 **Clear**  | `clear`
 **Delete** | `delete n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...`<br> e.g., `delete n/Alex Yeoh t/cs2103 t/cs2105`

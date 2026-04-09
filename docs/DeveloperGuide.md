@@ -124,23 +124,36 @@ How the parsing works:
 * All `XYZCommandParser` classes (e.g., `AddCommandParser`, `DeleteCommandParser`, ...) inherit from the `Parser` interface so that they can be treated similarly where possible e.g, during testing.
 
 ### Model component
-**API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
+**API** : [`Model.java`](https://github.com/AY2526S2-CS2103-F08-4/tp/tree/master/src/main/java/seedu/address/model/Model.java)
 
-<puml src="diagrams/ModelClassDiagram.puml" width="450" />
+<div align="center">
+<puml src="diagrams/ModelClassDiagram.puml" width="800" />
+</div>
 
+
+The class diagram below illustrates the `Person` and `Event` classes and their related attribute classes:
+
+<div align="center">
+<puml src="diagrams/PersonEventClassDiagram.puml" width="700" />
+</div>
 
 The `Model` component,
 
-* stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores the currently 'selected' `Person` objects (e.g., results of a search query) as a separate _filtered_ list which is exposed to outsiders as an unmodifiable `ObservableList<Person>` that can be 'observed' e.g., the UI can be bound to this list so that the UI automatically updates when the data in the list change.
-* stores a `UserPref` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPref` objects.
-* does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
+* stores the address book data i.e., all `Person` objects (contained in a `UniquePersonList`) and all pinned `Person` objects (contained in a separate `UniquePersonList`), as well as all `Event` objects (contained in a `UniqueEventList`).
+* exposes the currently 'selected' `Person` objects (e.g., results of a search query or a `pin` operation) as a _filtered_ and _sorted_ live view over the address book's person list, exposed to outsiders as an unmodifiable `ObservableList<Person>` 
+that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list changes. The _sorted_ list's comparator is dynamically toggled — it floats pinned contacts to the top only when 
+showing all persons (`showAllPersonsPinnedFirst()`), and is disabled during search, filter, or event-view operations.
+* exposes the currently 'selected' `Event` objects (e.g., results of an `event view` query) as a _filtered_ live view over the address book's event list, similarly exposed as an unmodifiable `ObservableList<Event>`.
+* stores a `UserPrefs` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPrefs` object.
+* does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components).
 
 <box type="info" seamless>
 
 **Note:** An alternative (arguably, a more OOP) model is given below. It has a `Tag` list in the `AddressBook`, which `Person` references. This allows `AddressBook` to only require one `Tag` object per unique tag, instead of each `Person` needing their own `Tag` objects.<br>
 
-<puml src="diagrams/BetterModelClassDiagram.puml" width="450" />
+<div align="center">
+<puml src="diagrams/BetterModelClassDiagram.puml" width="700" />
+</div>
 
 </box>
 
@@ -266,7 +279,7 @@ _{more aspects and alternatives to be added}_
 
 _{Explain here how the data archiving feature will be implemented}_
 
-### \[Proposed\] Retrieval of past entered commands
+### Retrieval of past entered commands
 #### Implementation
 The command retrieval mechanism is implemented as a UI-level feature split between `CommandBox` and `CommandHistory`.
 
@@ -445,6 +458,73 @@ The following activity diagram summarizes the command's match-resolution flow:
     * Pros: Does not require creating and maintaining a new class.
     * Cons: Creates method signatures with "Long Parameter List" code smell.
     * Cons: Tight coupling. Any changes to the search criteria (e.g., adding new search criteria,removing search criteria) will require modification to all the method signatures. 
+
+### Event Add feature
+
+The event add feature allows users to create and link a new event to a contact. It spans the `Logic` and `Model` components, and reuses the contact disambiguation mechanism from `CommandUtil`.
+
+#### Implementation
+
+`AddEventParser` parses the user's input and constructs an `AddEventCommand` with an `Event` object and a `PersonInformation` target. An `Event` object is composed of the following attributes:
+
+* `Title` — the name of the event (required).
+* `TimeRange` — the start and end date-time of the event in `yyyy-MM-dd HHmm` format (required). The end time must be after the start time.
+* `Description` — a short description of the event (optional).
+
+The required prefixes are `title/`, `start/`, and `end/` for the event, and `n/` for the target contact. The `desc/` prefix is optional, and additional person fields (`p/`, `e/`, `a/`, `t/`) may be supplied for disambiguation.
+
+The `java.util.Optional<T>` class is utilised to encapsulate any optional attribute of the `Event` object (i.e., `Description`), allowing the absence of a value to be represented explicitly rather than using `null`.
+
+`AddEventCommand#execute(Model)` begins with a prerequisite target resolution step, followed by a four-case resolution flow:
+
+1. **Target resolution** — `CommandUtil#targetPerson(Model, PersonInformation)` is called first to resolve the target contact (see [Contact Disambiguating feature](#contact-disambiguating-feature)).
+2. **Duplicate check** — If the resolved person is already linked to the same event, a `CommandException` is thrown.
+3. **Shared event** — If the event already exists in the global `UniqueEventList` (matched by `Title` and `TimeRange` via `Event#isSameEvent()`), `Model#linkPersonToEvent(Event)` is called instead of adding a new event. This increments the event's `numberOfPersonLinked` counter and returns the existing shared `Event` object to be linked to the person.
+4. **Clash check** — If the event is new but its `TimeRange` overlaps with any existing event in `UniqueEventList`, a `CommandException` is thrown.
+5. **New event** — If none of the above cases apply, `Model#addEvent(Event)` adds the event to `UniqueEventList`, and it is linked to the resolved person.
+
+In all success cases, a new `Person` object is constructed with the event appended to its event list, replacing the old entry via `Model#setPerson(Person, Person)`. Finally, `Model#showEventsForPerson(Person)` updates the UI to display the linked person and their events.
+
+#### Usage scenario
+
+The following sequence diagram shows how an `event add` command flows through the `Logic` and `Model` components, illustrating all four resolution cases within `AddEventCommand#execute(Model)`.
+
+<puml src="diagrams/AddEventSequenceDiagram.puml" alt="AddEventSequenceDiagram" />
+
+<box type="info" seamless>
+
+**Note:**
+* The lifeline for `AddEventCommand` should end at the destroy marker (X) but due to a limitation of PlantUML, the lifeline reaches the end of the diagram.
+* For clarity, the first-case duplicate-link validation `personToEdit.hasEvent(toAdd)` is omitted from this sequence diagram. If this check returns `true`, it means the target person is already linked to the event, and `AddEventCommand` immediately throws a `CommandException` without proceeding to the model-level event checks.
+
+</box>
+
+The following activity diagram summarizes the command's match-resolution flow:
+
+<puml src="diagrams/AddEventActivityDiagram.puml" alt="AddEventActivityDiagram" />
+
+#### Design considerations
+
+**Aspect: How events are shared across multiple persons**
+
+* **Alternative 1 (current choice):** Store events once in a global `UniqueEventList` and use a `numberOfPersonLinked` reference counter.
+  * Pros: Avoids duplicating event data when multiple persons attend the same event.
+  * Pros: Automatically removes the event from `UniqueEventList` when no persons are linked (counter reaches zero), keeping the list clean without explicit deletion logic.
+  * Cons: `Event` carries mutable state (`numberOfPersonLinked`) despite the rest of the model favouring immutability.
+
+* **Alternative 2:** Store an independent copy of the event inside each `Person`.
+  * Pros: Keeps `Event` fully immutable and simplifies person-level operations.
+  * Cons: The same event would be duplicated across persons, causing data inconsistency if the event details were to be updated.
+
+**Aspect: How time clash detection is enforced**
+
+* **Alternative 1 (current choice):** Detect clashes globally at the `AddressBook` level by checking all events in `UniqueEventList` via `TimeRange#isOverlapping()`.
+  * Pros: Enforces a global no-overlap constraint — no two events in the address book can overlap in time, regardless of which person they belong to.
+  * Cons: Prevents multiple persons from independently attending overlapping events, which may be overly restrictive.
+
+* **Alternative 2:** Detect clashes only at the per-person level.
+  * Pros: Allows different persons to have independently overlapping schedules.
+  * Cons: It does not make sense for a user to schedule two different events in the same time slot, as that would imply being in two places at once. A global clash check better reflects real-world scheduling constraints.
 
 --------------------------------------------------------------------------------------------------------------------
 
