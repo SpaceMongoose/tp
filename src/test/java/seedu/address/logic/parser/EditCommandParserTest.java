@@ -97,6 +97,14 @@ public class EditCommandParserTest {
         // non-empty preamble before prefixed target name
         assertParseFailure(parser, "oops " + TARGET_IDENTIFIER_AMY + DELIMITER + NAME_DESC_AMY,
             MESSAGE_INVALID_FORMAT);
+
+        // non-empty preamble with valid delimiter spacing (reaches target-segment preamble branch)
+        assertParseFailure(parser, "oops " + TARGET_IDENTIFIER_AMY + " -- " + PREFIX_NAME + "Bob",
+            MESSAGE_INVALID_FORMAT);
+
+        // missing target name prefix (empty preamble but no n/ value)
+        assertParseFailure(parser, PREFIX_PHONE + "98765432" + DELIMITER + NAME_DESC_AMY.trim(),
+            MESSAGE_INVALID_FORMAT);
     }
 
     @Test
