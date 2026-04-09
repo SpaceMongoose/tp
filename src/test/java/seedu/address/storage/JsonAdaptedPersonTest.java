@@ -190,6 +190,21 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
+    public void toModelType_duplicateEventIds_skipsSecondReference() throws IllegalValueException {
+        Event mappedEvent = new Event(new Title("Team Sync"), Optional.of(new Description("Weekly sync")),
+                new TimeRange("2026-03-26 1000", "2026-03-26 1030"), 3);
+
+        Map<Integer, Event> eventMap = new HashMap<>();
+        eventMap.put(mappedEvent.getEventId(), mappedEvent);
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
+                VALID_PHOTO, VALID_TAGS, List.of(mappedEvent.getEventId(), mappedEvent.getEventId()));
+
+        Person modelPerson = person.toModelType(eventMap);
+        assertEquals(1, modelPerson.getEvents().size());
+        assertSame(mappedEvent, modelPerson.getEvents().get(0));
+    }
+
+    @Test
     public void jsonCreator_nullTagsAndEventIds_defaultsToEmptyCollections() throws IllegalValueException {
         JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS,
                 VALID_PHOTO, null, null);
