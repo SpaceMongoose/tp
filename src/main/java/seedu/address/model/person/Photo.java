@@ -39,7 +39,6 @@ public class Photo {
     }
 
 
-
     /**
      * Returns the path pointing to image variable.
      */
