@@ -264,10 +264,13 @@ public class ModelManagerTest {
 
     @Test
     public void showPersons_pinnedMatchShownBeforeUnpinnedMatch() {
-        Person pinnedMatch = new PersonBuilder().withName("Pinned Match").withPhone("90000111").withTags("friends").build();
-        Person unpinnedMatch = new PersonBuilder().withName("Unpinned Match").withPhone("90000112").withTags("friends")
+        Person pinnedMatch = new PersonBuilder()
+                .withName("Pinned Match").withPhone("90000111").withTags("friends").build();
+        Person unpinnedMatch = new PersonBuilder()
+                .withName("Unpinned Match").withPhone("90000112").withTags("friends")
                 .build();
-        Person nonMatch = new PersonBuilder().withName("Non Match").withPhone("90000113").withTags("colleagues").build();
+        Person nonMatch = new PersonBuilder()
+                .withName("Non Match").withPhone("90000113").withTags("colleagues").build();
 
         modelManager.addPerson(unpinnedMatch);
         modelManager.addPerson(nonMatch);
