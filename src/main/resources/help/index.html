@@ -772,6 +772,32 @@
             <summary class="important-header">
                 <div class="header-left">
                     <span class="important-icon">⚠</span>
+                    <strong>Important: Event uniqueness and time clashes</strong>
+                </div>
+                <div class="header-controls">
+                    <span class="control-btn toggle-arrow"></span>
+                </div>
+            </summary>
+            <div class="important-wrapper">
+                <div class="important-content">
+                    <ul>
+                        <li>NAB treats the event list as <strong>your schedule</strong> (user point of view).</li>
+                        <li>Time clashes are checked <strong>globally</strong> across the event list, not per contact.
+                            <ul>
+                                <li>Reason: from your point of view, one user cannot be in two places at the same time, so overlapping events are blocked.</li>
+                            </ul>
+                        </li>
+                        <li>Overlap means the 2 ranges share actual time in common. Back-to-back events are allowed (for example, one ends at <code>1000</code> and another starts at <code>1000</code>).</li>
+                        <li>If a clash is found, NAB shows: <code>This event clashes with an existing event in the calendar.</code></li>
+                    </ul>
+                </div>
+            </div>
+        </details>
+
+        <details class="important-callout">
+            <summary class="important-header">
+                <div class="header-left">
+                    <span class="important-icon">⚠</span>
                     <strong>Important: Disambiguating contacts with the same name</strong>
                 </div>
                 <div class="header-controls">
@@ -1067,6 +1093,13 @@
             </tr>
 
             <tr>
+                <td>Clear</td>
+                <td>
+                    <code>clear</code>
+                </td>
+            </tr>
+
+            <tr>
                 <td>Delete</td>
                 <td>
                     <code>delete n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...</code><br>
@@ -1079,46 +1112,6 @@
                 <td>
                     <code>edit n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... -- [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... [pfp/PHOTO_PATH]</code><br>
                     <span class="example-text">e.g., <code>edit n/James Lee e/jameslee@example.com -- t/CS2100 pfp/images/james.jpg</code></span>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Find</td>
-                <td>
-                    <code>find n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...</code><br>
-                    <span class="example-text">e.g., <code>find n/James Jake p/67676969</code></span>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Filter</td>
-                <td>
-                    <code>filter t/TAG[, TAG]...</code><br>
-                    <span class="example-text">e.g., <code>filter t/friends</code></span>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Pin</td>
-                <td>
-                    <code>pin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...</code><br>
-                    <span class="example-text">e.g., <code>pin n/John Doe p/91234567</code></span>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Unpin</td>
-                <td>
-                    <code>unpin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...</code><br>
-                    <span class="example-text">e.g., <code>unpin n/John Doe p/91234567</code></span>
-                </td>
-            </tr>
-
-            <tr>
-                <td>Tag</td>
-                <td>
-                    <code>tag label/TAG_TO_ASSIGN [label/TAG_TO_ASSIGN]... n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... [n/NAME ...]...</code><br>
-                    <span class="example-text">e.g., <code>tag label/CS2103 label/CS2030S n/Alice n/Joe t/Family</code></span>
                 </td>
             </tr>
 
@@ -1146,12 +1139,41 @@
                 </td>
             </tr>
 
+            <tr>
+                <td>Exit</td>
+                <td>
+                    <code>exit</code>
+                </td>
+            </tr>
 
             <tr>
                 <td>Export</td>
                 <td>
                     <code>export t/EXPORT_TYPE f/FILENAME</code><br>
                     <span class="example-text">e.g., <code>export t/all f/save_file</code></span>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Filter</td>
+                <td>
+                    <code>filter t/TAG[, TAG]...</code><br>
+                    <span class="example-text">e.g., <code>filter t/friends</code></span>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Find</td>
+                <td>
+                    <code>find n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...</code><br>
+                    <span class="example-text">e.g., <code>find n/James Jake p/67676969</code></span>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Help</td>
+                <td>
+                    <code>help</code>
                 </td>
             </tr>
 
@@ -1171,23 +1193,26 @@
             </tr>
 
             <tr>
-                <td>Clear</td>
+                <td>Pin</td>
                 <td>
-                    <code>clear</code>
+                    <code>pin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...</code><br>
+                    <span class="example-text">e.g., <code>pin n/John Doe p/91234567</code></span>
                 </td>
             </tr>
 
             <tr>
-                <td>Help</td>
+                <td>Tag</td>
                 <td>
-                    <code>help</code>
+                    <code>tag label/TAG_TO_ASSIGN [label/TAG_TO_ASSIGN]... n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]... [n/NAME ...]...</code><br>
+                    <span class="example-text">e.g., <code>tag label/CS2103 label/CS2030S n/Alice n/Joe t/Family</code></span>
                 </td>
             </tr>
 
             <tr>
-                <td>Exit</td>
+                <td>Unpin</td>
                 <td>
-                    <code>exit</code>
+                    <code>unpin n/NAME [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]...</code><br>
+                    <span class="example-text">e.g., <code>unpin n/John Doe p/91234567</code></span>
                 </td>
             </tr>
             </tbody>
