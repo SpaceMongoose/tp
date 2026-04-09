@@ -54,6 +54,21 @@ public class Event {
     }
 
     /**
+     * Reconstruction constructor for storage deserialization with an explicit event ID.
+     * Uses the saved {@code eventId} directly for person-event mapping, so that
+     * modified event details do not break existing links.
+     */
+    public Event(Title title, Optional<Description> description, TimeRange timeRange,
+                 int numberOfPersonLinked, int eventId) {
+        requireAllNonNull(title, description, timeRange);
+        this.title = title;
+        this.description = description;
+        this.timeRange = timeRange;
+        this.numberOfPersonLinked = numberOfPersonLinked;
+        this.eventId = eventId;
+    }
+
+    /**
      * Returns the title of this event.
      */
     public Title getTitle() {

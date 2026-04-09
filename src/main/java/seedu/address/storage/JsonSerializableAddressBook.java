@@ -32,6 +32,8 @@ class JsonSerializableAddressBook {
             "Pinned list contains person(s) not present in persons list.";
     public static final String MESSAGE_ORPHANED_EVENT =
             "Dropping orphaned event with no linked persons: %s";
+    public static final String MESSAGE_DUPLICATE_EVENT_ID =
+            "Duplicate eventId %d found during load — skipping second entry.";
     private static final Logger logger = LogsCenter.getLogger(JsonSerializableAddressBook.class);
 
     private final List<JsonAdaptedPerson> persons = new ArrayList<>();
@@ -79,7 +81,8 @@ class JsonSerializableAddressBook {
         for (JsonAdaptedEvent jsonAdaptedEvent : events) {
             Event event = jsonAdaptedEvent.toModelType();
             if (eventMap.containsKey(event.getEventId())) {
-                throw new IllegalValueException(MESSAGE_DUPLICATE_EVENT);
+                logger.warning(String.format(MESSAGE_DUPLICATE_EVENT_ID, event.getEventId()));
+                continue;
             }
             eventMap.put(event.getEventId(), event);
         }

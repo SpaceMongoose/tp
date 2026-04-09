@@ -23,7 +23,7 @@ class JsonAdaptedEvent {
     private final String startTime;
     private final String endTime;
     private final int numberOfPersonLinked;
-    private final int eventId; // Unused during loading (purely for cosmetic when saving)
+    private final int eventId; // Used as the authoritative key for person-event mapping during loading
 
     /**
      * Constructs a {@code JsonAdaptedEvent} with the given event details.
@@ -90,6 +90,6 @@ class JsonAdaptedEvent {
             throw new IllegalValueException(TimeRange.MESSAGE_CONSTRAINTS);
         }
 
-        return new Event(modelTitle, modelDescription, modelTimeRange, 0);
+        return new Event(modelTitle, modelDescription, modelTimeRange, 0, eventId);
     }
 }
