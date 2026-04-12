@@ -139,8 +139,8 @@ The class diagram below illustrates the `Person` and `Event` classes and their r
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (contained in a `UniquePersonList`) and all pinned `Person` objects (contained in a separate `UniquePersonList`), as well as all `Event` objects (contained in a `UniqueEventList`).
-* exposes the currently 'selected' `Person` objects (e.g., results of a search query or a `pin` operation) as a _filtered_ and _sorted_ live view over the address book's person list, exposed to outsiders as an unmodifiable `ObservableList<Person>` 
-that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list changes. The _sorted_ list's comparator is dynamically toggled — it floats pinned contacts to the top only when 
+* exposes the currently 'selected' `Person` objects (e.g., results of a search query or a `pin` operation) as a _filtered_ and _sorted_ live view over the address book's person list, exposed to outsiders as an unmodifiable `ObservableList<Person>`
+that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list changes. The _sorted_ list's comparator is dynamically toggled — it floats pinned contacts to the top only when
 showing all persons (`showAllPersonsPinnedFirst()`) and tag-filtered views (`showPersons(...)`), and is disabled during search-result, single-person, or event-view operations.
 * exposes the currently 'selected' `Event` objects (e.g., results of an `event view` query) as a _filtered_ live view over the address book's event list, similarly exposed as an unmodifiable `ObservableList<Event>`.
 * stores a `UserPrefs` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPrefs` object.
@@ -456,7 +456,7 @@ The following activity diagram summarizes the command's match-resolution flow:
 * **Alternative 2:** Pass individual fields directly as arguments to the utility and model methods.
     * Pros: Does not require creating and maintaining a new class.
     * Cons: Creates method signatures with "Long Parameter List" code smell.
-    * Cons: Tight coupling. Any changes to the search criteria (e.g., adding new search criteria,removing search criteria) will require modification to all the method signatures. 
+    * Cons: Tight coupling. Any changes to the search criteria (e.g., adding new search criteria,removing search criteria) will require modification to all the method signatures.
 
 ### Event Add feature
 
@@ -933,7 +933,7 @@ Given below are instructions to test the app manually.
 
 <box type="info" seamless>
 
-**Note:** These steps assume the tester starts NAB from a fresh home folder so that the default sample data is loaded. 
+**Note:** These steps assume the tester starts NAB from a fresh home folder so that the default sample data is loaded.
 If the app state has already been modified, restart with a new empty folder before following the sequence below.
 
 </box>
