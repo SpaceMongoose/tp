@@ -227,6 +227,14 @@ public class AddCommandParserTest {
         // invalid photo
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
                 + TAG_DESC_HUSBAND + TAG_DESC_FRIEND + INVALID_PHOTO_DESC, Photo.MESSAGE_CONSTRAINTS);
+
+        // reserved edit delimiter token in name
+        assertParseFailure(parser, " n/Alice <edit new> p/78962734",
+                ParserUtil.MESSAGE_RESERVED_EDIT_SEGMENT_DELIMITER);
+
+        // reserved edit delimiter token in address
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + " a/Block 50 <edit new> West Coast",
+                ParserUtil.MESSAGE_RESERVED_EDIT_SEGMENT_DELIMITER);
     }
 
     @Test
