@@ -31,6 +31,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_PHOTO;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
@@ -329,6 +330,42 @@ public class EditCommandParserTest {
         String userInput = TARGET_IDENTIFIER_CARL + DELIMITER + TAG_EMPTY.trim();
 
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withTags().build();
+        EditCommand expectedCommand = new EditCommand(
+                new PersonInformation(new Name(TARGET_NAME_CARL), null, null, null, null), descriptor);
+
+        assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
+    public void parse_clearAddress_success() {
+        String userInput = TARGET_IDENTIFIER_CARL + DELIMITER + PREFIX_ADDRESS;
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptor();
+        descriptor.setAddress(null);
+        EditCommand expectedCommand = new EditCommand(
+                new PersonInformation(new Name(TARGET_NAME_CARL), null, null, null, null), descriptor);
+
+        assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
+    public void parse_clearEmail_success() {
+        String userInput = TARGET_IDENTIFIER_CARL + DELIMITER + PREFIX_EMAIL;
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptor();
+        descriptor.setEmail(null);
+        EditCommand expectedCommand = new EditCommand(
+                new PersonInformation(new Name(TARGET_NAME_CARL), null, null, null, null), descriptor);
+
+        assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
+    public void parse_clearPhoto_success() {
+        String userInput = TARGET_IDENTIFIER_CARL + DELIMITER + PREFIX_PHOTO;
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptor();
+        descriptor.setPhoto(null);
         EditCommand expectedCommand = new EditCommand(
                 new PersonInformation(new Name(TARGET_NAME_CARL), null, null, null, null), descriptor);
 
