@@ -616,7 +616,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   * 1b1. NAB displays an error message specifying the correct command format.
 <br> *Use case ends.*<br><br>
 * 1c. NAB is unable to read or copy the provided photo file.
-  * 1b1. NAB returns an error message indicating the photo save failure.
+  * 1c1. NAB returns an error message indicating the photo save failure.
     <br> *Use case ends.*<br><br>
 </box>
 
