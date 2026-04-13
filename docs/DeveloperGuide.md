@@ -1013,21 +1013,21 @@ The sample data also contains existing events, so `event view n/Alex Yeoh` and `
 
 ### Quick checks on sample data
 
-| Feature | Command | Manual action | Expected |
-| --- | --- | --- | --- |
-| Find unique contact | `find n/Alex Yeoh` | - | Only `Alex Yeoh` is shown. His linked events should also be shown because the match is unique. |
-| Filter by tag | `filter t/friends` | - | `Alex Yeoh` and `Bernice Yu` are shown. |
-| Filter by multiple tags | `filter t/colleagues, family` | - | Contacts tagged with either `colleagues` or `family` are shown. |
-| Reset person list | `list` | - | The full contact list is shown again. |
-| Pin contact | `pin n/Bernice Yu` | - | `Bernice Yu` becomes pinned and appears above unpinned contacts in the full list. |
-| Filter preserves pinned-first ordering | `pin n/Bernice Yu` then `filter t/friends` | Run the commands in sequence | `Alex Yeoh` and `Bernice Yu` are shown, with pinned `Bernice Yu` above `Alex Yeoh`. |
-| Pin already pinned contact | `pin n/Bernice Yu` | - | Error indicating that the contact is already pinned. |
-| Unpin contact | `unpin n/Bernice Yu` | - | `Bernice Yu` is unpinned. |
-| Unpin already unpinned contact | `unpin n/Bernice Yu` | - | Error indicating that the contact is already unpinned. |
-| View events for sample contact | `event view n/Alex Yeoh` | - | Alex's events are shown in the event list panel. |
-| View events for missing contact | `event view n/Person Not In List` | - | Error indicating that no such contact can be found. |
-| Command history | `list` then `find n/Alex Yeoh` then `filter t/friends` | After entering the commands, press the Up and Down arrow keys in the command box | NAB navigates previously entered commands for the current session only. |
-| Clipboard copy | - | Double-click any contact card in the person list, then paste elsewhere | The displayed contact details are copied to the system clipboard line-by-line. |
+| Feature | Command | Manual action                                                                                                   | Expected |
+| --- | --- |-----------------------------------------------------------------------------------------------------------------| --- |
+| Find unique contact | `find n/Alex Yeoh` | -                                                                                                               | Only `Alex Yeoh` is shown. His linked events should also be shown because the match is unique. |
+| Filter by tag | `filter t/friends` | -                                                                                                               | `Alex Yeoh` and `Bernice Yu` are shown. |
+| Filter by multiple tags | `filter t/colleagues, family` | -                                                                                                               | Contacts tagged with either `colleagues` or `family` are shown. |
+| Reset person list | `list` | -                                                                                                               | The full contact list is shown again. |
+| Pin contact | `pin n/Bernice Yu` | -                                                                                                               | `Bernice Yu` becomes pinned and appears above unpinned contacts in the full list. |
+| Filter preserves pinned-first ordering | `pin n/Bernice Yu` then `filter t/friends` | Run the commands in sequence                                                                                    | `Alex Yeoh` and `Bernice Yu` are shown, with pinned `Bernice Yu` above `Alex Yeoh`. |
+| Pin already pinned contact | `pin n/Bernice Yu` | -                                                                                                               | Error indicating that the contact is already pinned. |
+| Unpin contact | `unpin n/Bernice Yu` | -                                                                                                               | `Bernice Yu` is unpinned. |
+| Unpin already unpinned contact | `unpin n/Bernice Yu` | -                                                                                                               | Error indicating that the contact is already unpinned. |
+| View events for sample contact | `event view n/Alex Yeoh` | -                                                                                                               | Alex's events are shown in the event list panel. |
+| View events for missing contact | `event view n/Person Not In List` | -                                                                                                               | Error indicating that no such contact can be found. |
+| Command history | `list` then `find n/Alex Yeoh` then `filter t/friends` | After entering the commands, press the Up and Down arrow keys in the command box                                | NAB navigates previously entered commands for the current session only. |
+| Clipboard copy | - | Click once on a contact card (e.g., Alex Yeoh), then click it a second time to copy that contact's information. | The first click highlights the card. The second click copies the contact's details (Name, Phone, Tags, Address, Email) to the system clipboard line-by-line. |
 
 ### Add command checks
 
