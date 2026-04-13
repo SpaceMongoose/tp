@@ -62,9 +62,9 @@ The *Sequence Diagram* below shows how the components interact with each other f
 Each of the four main components (also shown in the diagram above),
 
 * defines its *API* in an `interface` with the same name as the Component.
-* implements its functionality using a concrete `{Component Name}Manager` class (which follows the corresponding API `interface` mentioned in the previous point.
+* implements its functionality using a concrete `{Component Name}Manager` class (which follows the corresponding API `interface` mentioned in the previous point.)
 
-For example, the `Logic` component defines its API in the `Logic.java` interface and implements its functionality using the `LogicManager.java` class which follows the `Logic` interface. Other components interact with a given component through its interface rather than the concrete class (reason: to prevent outside component's being coupled to the implementation of a component), as illustrated in the (partial) class diagram below.
+For example, the `Logic` component defines its API in the `Logic.java` interface and implements its functionality using the `LogicManager.java` class which follows the `Logic` interface. Other components interact with a given component through its interface rather than the concrete class (reason: to prevent outside components being coupled to the implementation of a component), as illustrated in the (partial) class diagram below.
 
 <puml src="diagrams/ComponentManagers.puml" width="300" />
 
@@ -76,11 +76,11 @@ The **API** of this component is specified in [`Ui.java`](https://github.com/se-
 
 <puml src="diagrams/UiClassDiagram.puml" alt="Structure of the UI Component"/>
 
-The UI consists of a `MainWindow` that is made up of parts e.g.`CommandBox`, `ResultDisplay`, `PersonListPanel`, `StatusBarFooter` etc. All these, including the `MainWindow`, inherit from the abstract `UiPart` class which captures the commonalities between classes that represent parts of the visible GUI.
+The UI consists of a `MainWindow` that is made up of parts e.g. `CommandBox`, `ResultDisplay`, `PersonListPanel`, `StatusBarFooter` etc. All these, including the `MainWindow`, inherit from the abstract `UiPart` class which captures the commonalities between classes that represent parts of the visible GUI.
 
 Additionally, the `CommandBox` component will contain a `CommandHistory` component that is used to support the command history feature.
 
-The `UI` component uses the JavaFx UI framework. The layout of these UI parts are defined in matching `.fxml` files that are in the `src/main/resources/view` folder. For example, the layout of the [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java) is specified in [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml)
+The `UI` component uses the JavaFX UI framework. The layout of these UI parts are defined in matching `.fxml` files that are in the `src/main/resources/view` folder. For example, the layout of the [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java) is specified in [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml)
 
 The `UI` component,
 
@@ -109,11 +109,10 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 How the `Logic` component works:
 
 1. When `Logic` is called upon to execute a command, it is passed to an `AddressBookParser` object which in turn creates a parser that matches the command (e.g., `DeleteCommandParser`) and uses it to parse the command.
-1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
-1. The command can communicate with the `Model` when it is executed (e.g., to delete a person).<br>
-   Note that although this is shown as a single step in the diagram above (for simplicity), in the code it can take several interactions (between the comm
-2. and object and the `Model`) to achieve.
-1. The result of the command execution is encapsulated as a `CommandResult` object which is returned back from `Logic`.
+2. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
+3. The command can communicate with the `Model` when it is executed (e.g., to delete a person).
+    - Note that although this is shown as a single step in the diagram above (for simplicity), in the code it can take several interactions (between the command object and the `Model`) to achieve.
+4. The result of the command execution is encapsulated as a `CommandResult` object which is returned back from `Logic`.
 
 Here are the other classes in `Logic` (omitted from the class diagram above) that are used for parsing a user command:
 
@@ -140,8 +139,8 @@ The class diagram below illustrates the `Person` and `Event` classes and their r
 The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (contained in a `UniquePersonList`) and all pinned `Person` objects (contained in a separate `UniquePersonList`), as well as all `Event` objects (contained in a `UniqueEventList`).
-* exposes the currently 'selected' `Person` objects (e.g., results of a search query or a `pin` operation) as a _filtered_ and _sorted_ live view over the address book's person list, exposed to outsiders as an unmodifiable `ObservableList<Person>` 
-that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list changes. The _sorted_ list's comparator is dynamically toggled — it floats pinned contacts to the top only when 
+* exposes the currently 'selected' `Person` objects (e.g., results of a search query or a `pin` operation) as a _filtered_ and _sorted_ live view over the address book's person list, exposed to outsiders as an unmodifiable `ObservableList<Person>`
+that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list changes. The _sorted_ list's comparator is dynamically toggled — it floats pinned contacts to the top only when
 showing all persons (`showAllPersonsPinnedFirst()`) and tag-filtered views (`showPersons(...)`), and is disabled during search-result, single-person, or event-view operations.
 * exposes the currently 'selected' `Event` objects (e.g., results of an `event view` query) as a _filtered_ live view over the address book's event list, similarly exposed as an unmodifiable `ObservableList<Event>`.
 * stores a `UserPrefs` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPrefs` object.
@@ -200,7 +199,7 @@ Step 1. The user launches the application for the first time. The `VersionedAddr
 
 <puml src="diagrams/UndoRedoState0.puml" alt="UndoRedoState0" />
 
-Step 2. The user executes `delete 5` command to delete the 5th person in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+Step 2. The user executes `delete n/Marcus` command to delete a contact named "Marcus" in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete n/Marcus` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
 
 <puml src="diagrams/UndoRedoState1.puml" alt="UndoRedoState1" />
 
@@ -418,9 +417,13 @@ The following activity diagram summarizes the command's match-resolution flow:
 
 The contact disambiguation feature allows NAB to accurately resolve a target contact when multiple contacts share the same name. This feature is utilized by commands that require precise targeting (e.g., delete, edit) and spans the Logic and Model components.
 
+Most person-targeting commands in NAB are intentionally stricter than `find`. For commands that act on an existing contact, such as `edit`, `delete`, `pin`, `unpin`, `tag`, and event-related commands, the target `n/NAME` is expected to match the contact's full name exactly before any optional disambiguation fields are applied. This reduces the risk of accidentally modifying or acting on the wrong contact. `find` is the main exception, as it is designed for retrieval rather than precise target selection.
+
 #### Implementation
 
 The core of this feature relies on the `PersonInformation` class. It encapsulates mandatory fields like `Name` and any optional fields (e.g., phone, email, address, or tags) that can be compared against existing contacts.
+
+In NAB, these fields do not all play the same role. Phone number is the only contact field for which uniqueness is enforced. By contrast, email, address, and tags are treated as optional descriptive fields that may be shared across multiple contacts, and are therefore used only for filtering or disambiguation rather than identity enforcement.
 
 The disambiguation logic is driven by `CommandUtil` and `ModelManager`: <br>
 * `CommandUtil#targetPerson(Model, PersonInformation)` acts as the orchestrator for the resolution process. This delegates the search and evaluation of `Person` to the methods below.<br><br>
@@ -457,11 +460,26 @@ The following activity diagram summarizes the command's match-resolution flow:
 * **Alternative 2:** Pass individual fields directly as arguments to the utility and model methods.
     * Pros: Does not require creating and maintaining a new class.
     * Cons: Creates method signatures with "Long Parameter List" code smell.
-    * Cons: Tight coupling. Any changes to the search criteria (e.g., adding new search criteria,removing search criteria) will require modification to all the method signatures. 
+    * Cons: Tight coupling. Any changes to the search criteria (e.g., adding new search criteria,removing search criteria) will require modification to all the method signatures.
+
+**Aspect: Which contact fields should be uniqueness-enforced**
+
+* **Alternative 1 (current choice):** Enforce uniqueness only on phone numbers.
+    * Pros: Keeps the identity rule simple and consistent, because phone number is a mandatory field while email and address are optional.
+    * Pros: Avoids treating optional fields as identity fields, which would otherwise block contact creation based on information that may be absent or intentionally shared.
+    * Pros: Still allows users to narrow down duplicate-name matches using email, address, and tags when needed.
+    * Cons: Some real-world cases that look naturally unique, such as student email addresses, are not prevented from appearing more than once.
+
+* **Alternative 2:** Enforce uniqueness on both phone numbers and email addresses.
+    * Pros: Would catch more potential duplicate contacts in cases where email is present and expected to be unique.
+    * Cons: Makes an optional field behave like an identity field, complicating the contact model and duplicate-handling rules.
+    * Cons: Reduces flexibility for contacts that do not have an email recorded yet, or for workflows where email is used mainly as an auxiliary lookup/disambiguation field.
 
 ### Event Add feature
 
 The event add feature allows users to create and link a new event to a contact. It spans the `Logic` and `Model` components, and reuses the contact disambiguation mechanism from `CommandUtil`.
+
+NAB uses a shared-event model: events are stored globally and linked to one or more contacts. Two event additions are treated as the same event only when both the title and time range match exactly.
 
 #### Implementation
 
@@ -475,7 +493,7 @@ The required prefixes are `title/`, `start/`, and `end/` for the event, and `n/`
 
 The `java.util.Optional<T>` class is utilised to encapsulate any optional attribute of the `Event` object (i.e., `Description`), allowing the absence of a value to be represented explicitly rather than using `null`.
 
-`AddEventCommand#execute(Model)` begins with a prerequisite target resolution step, followed by a four-case resolution flow:
+`AddEventCommand#execute(Model)` begins with a prerequisite target resolution step, followed by a five-case resolution flow:
 
 1. **Target resolution** — `CommandUtil#targetPerson(Model, PersonInformation)` is called first to resolve the target contact (see [Contact Disambiguating feature](#contact-disambiguating-feature)).
 2. **Duplicate check** — If the resolved person is already linked to the same event, a `CommandException` is thrown.
@@ -525,6 +543,14 @@ The following activity diagram summarizes the command's match-resolution flow:
 * **Alternative 2:** Detect clashes only at the per-person level.
   * Pros: Allows different persons to have independently overlapping schedules.
   * Cons: It does not make sense for a user to schedule two different events in the same time slot, as that would imply being in two places at once. A global clash check better reflects real-world scheduling constraints.
+
+### Tag handling
+
+NAB treats tags as case-insensitive labels. To keep the UI and stored data consistent, tags are normalized to lowercase when they are created or imported. This avoids confusing situations where logically identical tags such as `Friends` and `friends` appear with different casing.
+
+NAB also enforces a hard limit of 30 characters for each tag. This is an intentional tradeoff: tags are meant to remain short, scannable labels rather than long free-form descriptions, but 30 characters still provides enough room for realistic module, project, and CCA-related labels.
+
+The `tag` command is intentionally designed as a bulk-assignment operation that ensures the specified tags are present on the matched contacts. Its purpose is not to guarantee that every target contact is modified. If a contact already has a tag, NAB does not create a duplicate tag, and the command still succeeds because the desired postcondition has already been met.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -603,23 +629,22 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Use case:** `UC1` - Add Contact<br>
 **Guarantee:** New contact is successfully saved in the system.<br>
 **MSS**
-1. User requests to add a contact.
-2. User enters the necessary contact information.
-3. NAB saves the contact into the contact list/database.
+1. User requests to add a contact by providing the necessary contact information.
+2. NAB saves the contact into the system.
+3. NAB updates the display to show the contact list and clears the event panel.
 <br> *Use case ends.*
 
 **Extensions**
 
-* 2a. NAB detects an existing contact number entered.
-  * 2a1. NAB requests for a different contact number.
-  * 2a2. User enters a new contact number.
-  * Steps 2a1 - 2a2 are repeated until a unique contact number is entered.
-<br> *Use case continues from step 3.*<br><br>
-* 2b. NAB detects invalid contact information.
-  * 2b1. NAB requests for the correct information.
-  * 2b2. User enters the correct contact information.
-  * Steps 2b1 - 2b2 are repeated until all contact information are valid entries.
-  <br> *Use case continues from step 3.*
+* 1a. NAB detects that a contact with the provided phone number exists.
+  * 1a1. NAB returns an error message stating that a contact with this phone number already exists.
+<br> *Use case ends.*<br><br>
+* 1b. NAB detects invalid or missing contact information.
+  * 1b1. NAB displays an error message specifying the correct command format.
+<br> *Use case ends.*<br><br>
+* 1c. NAB is unable to read or copy the provided photo file.
+  * 1c1. NAB returns an error message indicating the photo save failure.
+    <br> *Use case ends.*<br><br>
 </box>
 
 <box type="info" seamless>
@@ -629,23 +654,22 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Use case:** `UC2` - Find Contact<br>
 **MSS**
-1. User requests to find a contact.
-2. User provides a keyword.
-3. NAB checks whether the entered keyword is valid.
-4. NAB identifies the specific contact matching the name.
-5. NAB displays a list of contacts matching the user’s keyword.
+1. User requests to find a contact by providing a name and any optional fields.
+2. NAB searches for all contacts matching the criteria.
+3. NAB displays a list of contacts matching the criteria specified.
    <br> *Use case ends.*
 
 **Extensions**
 
-* 3a. NAB detects invalid characters in the provided keyword
-    * 3a1. NAB returns an error message
+* 1a. NAB detects invalid characters or formats in the provided fields.
+    * 1a1. NAB displays an error message specifying the correct command format.
       <br> *Use case ends.*<br><br>
-* 4a. NAB detects finds multiple possible contacts matching the keyword provided.
-    * 4a1. User provides more information to enrich the search.
-      <br> *Use case resumes from step 3.*<br><br>
-* 4b. NAB finds no available contacts matching the keyword provided.
-    * 4b1. NAB informs the user that no matches were found.
+* 2a. NAB finds exactly one contact matching the criteria.
+    * 2a1. NAB displays the single contact.
+    * 2a2. NAB automatically retrieves and displays the event list associated with that specific contact.
+      <br> *Use case ends.*<br><br>
+* 2b. NAB finds no available contacts matching the criteria.
+    * 2b1. NAB displays an empty contact list and informs the user that 0 matches were found.
       <br> *Use case ends.*
 </box>
 
@@ -656,22 +680,22 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Use case:** `UC3` - Delete Contact<br>
 **MSS**
-1. User requests to delete a specific contact by providing their name.
-2. NAB checks whether the provided name is valid.
-3. NAB identifies the specific contact matching the name.
-4. NAB deletes the contact.
+1. User requests to delete a specific contact by providing their name and any optional fields.
+2. NAB identifies the specific contact matching the fields.
+3. NAB deletes the contact.
+4. NAB updates the display to show the remaining contacts and clears the event panel.
    <br> *Use case ends.*
 
 **Extensions**
 
-* 2a. NAB detects invalid characters in the provided name.
-    * 2a1. NAB returns an error message.
+* 1a. NAB detects invalid characters or formats in the provided fields.
+    * 1a1. NAB displays an error message specifying the correct command format.
       <br> *Use case ends.*<br><br>
-* 3a. NAB finds multiple contacts that match the name provided.
-    * 3a1. User provides more information to enrich the search.
-      <br> *Use case resumes from step 2.*<br><br>
-* 3b. NAB finds no available contacts that match the name provided.
-    * 3b1. NAB informs the user that no matches were found.
+* 2a. NAB finds multiple contacts that match the provided fields.
+    * 2a1. NAB displays the conflicting contacts and returns an error informing the user to provide more specific details.
+      <br> *Use case ends.*<br><br>
+* 2b. NAB finds no available contacts that matches the fields provided.
+    * 2b1. NAB informs the user that no matches were found.
       <br> *Use case ends.*
 </box>
 
@@ -684,18 +708,28 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Preconditions:** Contact that the event will be tagged to already exists in NAB.<br>
 **Guarantees:** Event is added to the system and is tagged to the specified contact.<br>
 **MSS**
-1. User requests to create a new event for a specific contact.
-2. User enters the necessary event information and the information of the contact to be tagged to.
-3. NAB saves the event into the event list/database.
+1. User requests to add an event to a contact by providing the event details and the contact's identifying details.
+2. NAB identifies the specific contact.
+3. NAB saves the event and links it to the contact.
+4. NAB displays the updated event list for the contact.
    <br> *Use case ends.*
 
 **Extensions**
 
-* 2a. NAB finds a duplicate event that has already been registered to the contact.
-    * 2a1. NAB rejects the event from being added.
+* 1a. NAB detects invalid characters, formats, or missing required fields.
+  * 1a1. NAB displays an error message specifying the correct command format.
     <br> *Use case ends.*<br><br>
-* 2b. NAB is unable to find the specified contact.
-    * 2b1. NAB informs the user that the contact does not exist.
+* 2a. NAB finds no contacts matching the provided details.
+  * 2a1. NAB displays an error message indicating the contact does not exist.
+    <br> *Use case ends.*<br><br>
+* 2b. NAB finds multiple contacts that match the provided details.
+  * 2b1. NAB displays the conflicting contacts and prompts for more specific details.
+    <br> *Use case ends.*<br><br>
+* 3a. NAB detects that the contact is already linked to this exact event.
+  * 3a1. NAB displays an error message indicating the duplication.
+    <br> *Use case ends.*<br><br>
+* 3b. NAB detects that the event overlaps with an existing event in the calendar.
+  * 3b1. NAB displays an error message listing the clashing events.
     <br> *Use case ends.*
 </box>
 
@@ -706,26 +740,25 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Use case:** `UC5` - View Event<br>
 **MSS**
-1. User requests to view the event list for a specific contact by providing their name.
-2. NAB checks whether the provided name is valid.
-3. NAB identifies the specific contact.
-4. NAB retrieves the event list associated with the contact.
-5. NAB displays the formatted event list to the user.
+1. User requests to view the event list for a specific contact by providing their name and any optional fields.
+2. NAB identifies the specific contact.
+3. NAB retrieves the event list associated with the contact.
+4. NAB displays the formatted event list to the user.
    <br> *Use case ends.*
 
 **Extensions**
 
-* 1a. User requests to view events without specifying a contact name (i.e. view own events).
-    * 1a1. NAB returns the user’s own event list.
-    <br> *Use case resumes from step 5.*<br><br>
-* 2a. NAB detects invalid characters in the provided name.
-    * 2b1. NAB returns an error message.
+* 1a. NAB detects invalid characters or formats in the provided fields.
+    * 1a1. NAB displays an error message specifying the correct command format.
     <br> *Use case ends.*<br><br>
-* 3a. NAB is unable to find a contact matching the provided name.
-    * 3a1. NAB informs the user that contact does not exist.
+* 2a. NAB is unable to find a contact matching the provided criteria.
+    * 2a1. NAB informs the user that contact does not exist.
     <br> *Use case ends.*<br><br>
-* 4a. NAB finds no events associated with the contact.
-    * 4a1. NAB informs the user that there are no events associated with the contact.
+* 2b. NAB finds multiple contacts that match the provided criteria.
+  * 2b1. NAB displays the conflicting contacts and returns an error prompting the user to provide more specific arguments.
+    <br> *Use case ends.*<br><br>
+* 3a. NAB finds no events associated with the contact.
+    * 3a1. NAB informs the user that there are 0 events associated with the contact.
     <br> *Use case ends.*
 </box>
 
@@ -736,20 +769,18 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Use case:** `UC6` - Filter Contact by Tag<br>
 **MSS**
-1. User requests to find contacts with specific tag(s).
-2. User enters the necessary tag(s).
-3. NAB checks whether the provided tag(s) are valid.
-4. NAB retrieves a list of contacts matching the tag(s).
-5. NAB displays the list of contacts to the user.
+1. User requests to filter contacts by providing one or more tags.
+2. NAB filters contact(s) with the tags provided.
+3. NAB displays the list of contacts matching the tags and clears the event panel.
    <br> *Use case ends.*
 
 **Extensions**
 
-* 3a. NAB detects invalid characters in the provided tag
-    * 3a1. NAB returns an error message.
+* 1a. NAB detects invalid characters or formats in the provided fields.
+  * 1a1. NAB displays an error message specifying the correct command format.
     <br> *Use case ends.*<br><br>
-* 4a. NAB finds no available contacts matching the tag(s) provided.
-    * 4a1. NAB informs the user that no matches were found.
+* 2a. No contacts in the system contain any of the provided tags.
+  * 2a1. NAB displays an empty list and a message indicating no contacts were found with those tags.
     <br> *Use case ends.*
 </box>
 
@@ -760,15 +791,23 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Use case:** `UC7` - Export Contacts<br>
 **MSS**
-1. User requests to export all contacts out of NAB.
-2. NAB saves a formatted file containing the list of contacts to a file directory.
+1. User requests to export contacts and provides an export type and a filename prefix.
+2. NAB determines the set of contacts to export according to the chosen export type.
+3. NAB writes the export files.
+4. NAB informs the user of a successful export.
    <br> *Use case ends.*
 
 **Extensions**
 
-* 2a. NAB is unable to save the file to the user’s file directory.
-    * 2a1. NAB informs the user of the error.
-    <br> *Use case ends.*
+* 1a. The provided export arguments are invalid.
+    * 1a1. NAB informs the user of a command format error and aborts the export.
+      <br> *Use case ends.*
+* 2a. The selected contact set is empty.
+    * 2a1. NAB informs the user that there are no contacts to export and aborts the export.
+      <br> *Use case ends.*
+* 3a. NAB cannot write the files to the destination.
+    * 3a1. NAB informs the user about the write error and aborts the export.
+      <br> *Use case ends.*
 </box>
 
 <box type="info" seamless>
@@ -777,39 +816,42 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 
 **Use case:** `UC8` - Import Contacts<br>
-**Preconditions:** Only contact information from a specified file format can be imported<br>
+**Preconditions:** The user supplies a filename prefix identifying the expected import files which exist.<br>
 **MSS**
-1. User requests to import new contacts from an external contact list.
-2. NAB adds the list of new contacts to the existing contact list/database.
+1. User requests to import contacts specifying an import mode and a filename prefix.
+2. NAB reads the required import files and parses their contents.
+3. NAB adds or replaces contacts according to the selected import mode.
+4. NAB informs the user as to how many contacts were added and how many were skipped.
    <br> *Use case ends.*
 
 **Extensions**
 
-* 1a. NAB is unable to read the file.
-    * 1a1. NAB informs the user of the error.
-    <br> *Use case ends.*<br><br>
-* 1b. NAB finds a contact number that already exists in the database while reading the file.
-    * 1b1. NAB informs the user of the error.
-    * 1b2. User acknowledges the error.
-    * 1b3. NAB skips the contact information with the existing contact number and
-      continues reading the rest of the file.
-    <br> *Use case ends.*
+* 1a. The provided import arguments are invalid.
+    * 1a1. NAB informs the user of a command format error and aborts the import.
+      <br> *Use case ends.*
+* 2a. NAB cannot read the required files.
+    * 2a1. NAB informs the user about the read error and aborts the import.
+      <br> *Use case ends.*
+* 3a. A data row is malformed or invalid.
+    * 3a1. NAB skips the row, records the reason, and continues importing the remaining rows.
+      <br> *Use case continues from step 4.*
+* 3b. An existing contact is found when importing.
+    * 3b1. NAB skips the duplicate row and continues importing the remaining rows.
+      <br> *Use case continues from step 4.*
 </box>
-
-*{More to be added}*
 
 ### Non-Functional Requirements
 
 ###### Portability:
 1.  Should work on any _mainstream OS_ as long as it has Java `17` or above installed.
-2.  Should be packaged as a single JAR file not exceeding size of 100MB.
+2.  Should be packaged as a single JAR file not exceeding a size of 100MB.
 3.  Should be fully functional offline and must not depend on any remote server.
 
 ###### Scalability:
 4.  NAB is intended for single-user use only and does not support multi-user scenarios.
 
 ###### Usability:
-5.  GUI should work well (i.e. should not cause any resolution-related inconveniences to the user), for standard screen resolutions 1980x1080 and higher, and for screens scaled by 100% to 125%.
+5.  GUI should work well (i.e. should not cause any resolution-related inconveniences to the user), for standard screen resolutions 1920x1080 and higher, and for screens scaled by 100% to 125%.
 6.  GUI should remain usable (i.e. all functions can be used even if the user experience is not optimal) for resolutions 1280x720 and higher, and for screens scaled by 150%.
 
 ###### Performance:
@@ -934,7 +976,7 @@ Given below are instructions to test the app manually.
 
 <box type="info" seamless>
 
-**Note:** These steps assume the tester starts NAB from a fresh home folder so that the default sample data is loaded. 
+**Note:** These steps assume the tester starts NAB from a fresh home folder so that the default sample data is loaded.
 If the app state has already been modified, restart with a new empty folder before following the sequence below.
 
 </box>

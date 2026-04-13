@@ -141,6 +141,7 @@
 
                     <li><code>NAME</code> and <code>TAG</code> are case-insensitive.
                         <br>e.g. <code>t/Friends</code> and <code>t/friends</code> are treated as 1 unique tag.
+                        <br>Tags are stored and displayed in lowercase, so <code>t/Friends</code> will appear as <code>friends</code>.
                         <br>e.g. <code>n/aLeX YeOH</code> will match <code>Alex Yeoh</code>
                     </li>
 
@@ -171,11 +172,12 @@
                             <td><code>n/NAME</code></td>
                             <td>
                                 <ul>
-                                    <li>Must contain only alphabetic characters and spaces.</li><br>
-                                    <li>Cannot be blank or start with a space.</li>
+                                    <li>May contain alphabetic characters, spaces, hyphens (<code>-</code>), and apostrophes (<code>'</code>).</li><br>
+                                    <li>Cannot be blank or start with a space.</li><br>
+                                    <li>Must not contain <code>/</code>.</li>
                                 </ul>
                             </td>
-                            <td><code>n/John Doe</code></td>
+                            <td><code>n/Dylan O'Brien</code></td>
                         </tr>
                         <tr>
                             <td><code>p/PHONE_NUMBER</code></td>
@@ -213,7 +215,7 @@
                                 <ul>
                                     <li>Can contain alphanumeric characters, spaces, and the following special
                                         characters: <code>#</code>, <code>_</code>, <code>,</code> (comma),
-                                        and <code>-</code> (hyphen).
+                                        <code>-</code> (hyphen), <code>.</code> (period), and <code>'</code> (apostrophe).
                                     </li><br>
                                     <li>Cannot be blank or consist only of spaces (must start with an alphanumeric or allowed special character).</li>
                                 </ul>
@@ -227,7 +229,8 @@
                                     <li>Can contain letters, digits, spaces, hyphens (<code>-</code>), and underscores (<code>_</code>).
                                     </li><br>
                                     <li>Must start with an alphanumeric character (a letter or digit).</li><br>
-                                    <li>Must be between 1 and 20 characters long.</li>
+                                    <li>Must be between 1 and 30 characters long.</li><br>
+                                    <li>Tags are stored and displayed in lowercase, even if uppercase letters are entered.</li>
                                 </ul>
                             </td>
                             <td><code>t/friend</code></td>
@@ -722,22 +725,24 @@
                         <td>
                             <ul>
                                 <li>Must be 1 to 50 characters.</li><br>
-                                <li> Must contain only alphanumeric characters and single spaces between words.</li><br>
-                                <li> No leading/trailing spaces and no consecutive spaces.</li>
+                                <li>May contain letters, digits, spaces, periods (<code>.</code>), hyphens (<code>-</code>), colons (<code>:</code>), and parentheses (<code>(</code>, <code>)</code>).</li><br>
+                                <li>Must not contain <code>/</code>.</li><br>
+                                <li>No leading/trailing spaces and no consecutive spaces.</li>
                             </ul>
                         </td>
-                        <td><code>title/CS2109S Meeting</code></td>
+                        <td><code>title/CS2103 Milestone 2 - Draft Submission</code></td>
                     </tr>
                     <tr>
                         <td><code>desc/DESCRIPTION</code></td>
                         <td>
                             <ul>
                                 <li>Must be 1 to 1000 characters.</li><br>
-                                <li>Must contain only alphanumeric characters and single spaces between words.</li><br>
+                                <li>May contain letters, digits, spaces, periods (<code>.</code>), hyphens (<code>-</code>), colons (<code>:</code>), and parentheses (<code>(</code>, <code>)</code>).</li><br>
+                                <li>Must not contain <code>/</code>.</li><br>
                                 <li>No leading/trailing spaces and no consecutive spaces.</li>
                             </ul>
                         </td>
-                        <td><code>desc/Final discussion on problem set 1</code></td>
+                        <td><code>desc/Project Meeting (Online): bring printout.</code></td>
                     </tr>
                     <tr>
                         <td><code>start/START_DATE</code></td>

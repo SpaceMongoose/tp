@@ -10,8 +10,10 @@ import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
@@ -25,12 +27,14 @@ import seedu.address.model.person.Photo;
  * - {filename}_events.csv containing all unique events
  */
 public class ExportCommand extends Command {
+    public static final String MESSAGE_EMPTY_EXPORT = "Nothing to export: There are no contacts.";
 
     public static final String COMMAND_WORD = "export";
 
     public static final String MESSAGE_SUCCESS = "Exported list to %1$s_persons.csv and %1$s_events.csv";
 
-    public static final String MESSAGE_FAILURE = "Failed to export list to %1$s";
+    public static final String MESSAGE_FAILURE = "Failed to export list to %1$s_persons.csv and %1$s_events.csv."
+            + " Please close any open file(s) with that name.";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Exports a list of contacts into two CSV formatted files for future use.\n"
@@ -60,6 +64,8 @@ public class ExportCommand extends Command {
     private static final String DESCRIPTION_COLUMN_HEADER = "Description";
     private static final String START_TIME_COLUMN_HEADER = "Start";
     private static final String END_TIME_COLUMN_HEADER = "End";
+
+    private static final Logger logger = LogsCenter.getLogger(ExportCommand.class);
 
     private final String exportType;
     private final String filename;
@@ -91,8 +97,10 @@ public class ExportCommand extends Command {
         requireNonNull(model);
 
         List<Person> exportedList = getExportedList(model);
+        if (exportedList.isEmpty()) {
+            throw new CommandException(MESSAGE_EMPTY_EXPORT);
+        }
 
-        // Collect all unique events referenced by exported persons
         Set<Event> uniqueEvents = collectUniqueEvents(exportedList);
 
         Path personsExportPath = getPersonsExportPath(model);
@@ -125,16 +133,17 @@ public class ExportCommand extends Command {
             FileUtil.writeToFile(personsPath, personsCsvData);
             FileUtil.writeToFile(eventsPath, eventsCsvData);
         } catch (IOException e) {
+            logger.warning(String.format("Export failed for %s: %s", filename, e));
             throw new CommandException(String.format(MESSAGE_FAILURE, filename));
         }
     }
 
     /**
-     * Returns the path to the persons CSV file to be exported, resolved relative to the
+     * Returns the path to the 'persons' CSV file to be exported, resolved relative to the
      * directory containing the current AddressBook data file.
      *
      * @param model {@code Model} providing the base file path from user preferences.
-     * @return The resolved {@code Path} for the persons export file.
+     * @return The resolved {@code Path} for the 'persons' export file.
      */
     protected Path getPersonsExportPath(Model model) {
         Path userPrefParentDirPath = model.getAddressBookFilePath().getParent();
