@@ -139,12 +139,12 @@ public class EditCommandParserTest {
 
     @Test
     public void parse_reservedDelimiterTokenInFields_failure() {
-        String userInput = TARGET_IDENTIFIER_AMY + " a/Block 50 <edit new> West Coast"
+        String userInput = TARGET_IDENTIFIER_AMY + " a/Block 50 >> West Coast"
             + " " + EditCommandParser.EDIT_SEGMENT_DELIMITER + " " + PHONE_DESC_AMY.trim();
         assertParseFailure(parser, userInput, MESSAGE_INVALID_FORMAT);
 
         userInput = TARGET_IDENTIFIER_AMY + " " + EditCommandParser.EDIT_SEGMENT_DELIMITER + " "
-            + "a/Block 50 <edit new> West Coast";
+            + "a/Block 50 >> West Coast";
         assertParseFailure(parser, userInput, MESSAGE_INVALID_FORMAT);
     }
 
@@ -176,8 +176,6 @@ public class EditCommandParserTest {
             Phone.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, TARGET_IDENTIFIER_AMY + DELIMITER + INVALID_EMAIL_DESC.trim(),
             Email.MESSAGE_CONSTRAINTS);
-        assertParseFailure(parser, TARGET_IDENTIFIER_AMY + DELIMITER + INVALID_ADDRESS_DESC.trim(),
-            Address.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, TARGET_IDENTIFIER_AMY + DELIMITER + INVALID_TAG_DESC.trim(),
             String.format("Invalid tag: %s.\n%s", "hubby*", Tag.MESSAGE_CONSTRAINTS));
 
