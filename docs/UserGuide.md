@@ -642,6 +642,18 @@ Creates a new event for a specified person.
 
 <box type="important">
 
+**How NAB treats shared events**
+
+
+- Events are linked to contacts, but NAB stores them in one shared event list.
+- If you add an event with the same title and the same start/end time as an existing event, NAB treats it as the same event and links that event to the new contact instead of creating a duplicate event.
+- If you add an event with a different title or a different time range, NAB treats it as a different event.
+- Time clashes are checked globally only for different events in the shared event list.
+
+</box>
+
+<box type="important">
+
 **Disambiguating contacts with the same name**
 
 

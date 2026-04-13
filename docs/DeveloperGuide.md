@@ -479,6 +479,8 @@ The following activity diagram summarizes the command's match-resolution flow:
 
 The event add feature allows users to create and link a new event to a contact. It spans the `Logic` and `Model` components, and reuses the contact disambiguation mechanism from `CommandUtil`.
 
+NAB uses a shared-event model: events are stored globally and linked to one or more contacts. Two event additions are treated as the same event only when both the title and time range match exactly.
+
 #### Implementation
 
 `AddEventParser` parses the user's input and constructs an `AddEventCommand` with an `Event` object and a `PersonInformation` target. An `Event` object is composed of the following attributes:
