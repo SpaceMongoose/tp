@@ -13,9 +13,7 @@ import seedu.address.logic.parser.exceptions.ParseException;
  */
 public class EventCommandParser implements Parser<Command> {
     public static final String MESSAGE_USAGE = "The 'event' command requires a valid subcommand.\n"
-            + "Available subcommands:\n"
-            + "1. Adding an event: event add\n"
-            + "2. Viewing events: event view\n"
+            + "Available subcommands:\n" + "1. Adding an event: event add\n" + "2. Viewing events: event view\n"
             + "3. Deleting an event: event delete\n"
             + "To see the full usage for a specific subcommand, type it without any parameters (e.g., 'event add').";
 
