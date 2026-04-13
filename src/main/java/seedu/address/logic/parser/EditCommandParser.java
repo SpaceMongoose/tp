@@ -24,7 +24,7 @@ import seedu.address.model.tag.Tag;
  * Parses input arguments and creates a new EditCommand object
  */
 public class EditCommandParser implements Parser<EditCommand> {
-    public static final String EDIT_SEGMENT_DELIMITER = "<edit new>";
+    public static final String EDIT_SEGMENT_DELIMITER = ">>";
 
     /**
      * Parses the given {@code String} of arguments in the context of the EditCommand
@@ -117,14 +117,17 @@ public class EditCommandParser implements Parser<EditCommand> {
         if (updateMultimap.getValue(PREFIX_PHONE).isPresent()) {
             editPersonDescriptor.setPhone(ParserUtil.parsePhone(updateMultimap.getValue(PREFIX_PHONE).get()));
         }
-        if (updateMultimap.getValue(PREFIX_EMAIL).isPresent()) {
-            editPersonDescriptor.setEmail(ParserUtil.parseEmail(updateMultimap.getValue(PREFIX_EMAIL).get()));
+        Optional<String> updatedEmailValue = updateMultimap.getValue(PREFIX_EMAIL);
+        if (updatedEmailValue.isPresent()) {
+            editPersonDescriptor.setEmail(updatedEmailValue.get().isBlank() ? null : ParserUtil.parseEmail(updatedEmailValue.get()));
         }
-        if (updateMultimap.getValue(PREFIX_ADDRESS).isPresent()) {
-            editPersonDescriptor.setAddress(ParserUtil.parseAddress(updateMultimap.getValue(PREFIX_ADDRESS).get()));
+        Optional<String> updatedAddressValue = updateMultimap.getValue(PREFIX_ADDRESS);
+        if (updatedAddressValue.isPresent()) {
+            editPersonDescriptor.setAddress(updatedAddressValue.get().isBlank() ? null : ParserUtil.parseAddress(updatedAddressValue.get()));
         }
-        if (updateMultimap.getValue(PREFIX_PHOTO).isPresent()) {
-            editPersonDescriptor.setPhoto(ParserUtil.parsePhoto(updateMultimap.getValue(PREFIX_PHOTO).get()));
+        Optional<String> updatedPhotoValue = updateMultimap.getValue(PREFIX_PHOTO);
+        if (updatedPhotoValue.isPresent()) {
+            editPersonDescriptor.setPhoto(updatedPhotoValue.get().isBlank() ? null : ParserUtil.parsePhoto(updatedPhotoValue.get()));
         }
         return editPersonDescriptor;
     }
