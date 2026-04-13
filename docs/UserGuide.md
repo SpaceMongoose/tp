@@ -137,7 +137,9 @@ This feature allows you to use **arrow keys** while in the command box to naviga
 ### Copying a Contact's Information
 
 NAB allows you to copy a contact’s information, making it easier to reuse their details without typing them out manually.
-A double-click on a person's contact copies their information to your clipboard.
+
+To copy a contact's details to your clipboard, **click on their contact card once to highlight it, 
+then click it a second time to copy.** This allows you to easily paste their information for use outside of NAB
 
 This feature allows you to copy the displayed information of a contact for use outside NAB.
 
